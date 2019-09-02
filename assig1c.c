@@ -19,14 +19,14 @@ int main(int argc, char** argv){
 	int threads = 4;
 	
 	char* cmd = "tr";
-	char* file1 = "matrix3.in";
+	char* file1 = "matrix2.in";
 	char* file2;
 	
 	clock_t begin = clock();
 	
 	printf("commands sent: %d\n",argc);
 	
-	file = fopen("matrix3.in","r");	
+	file = fopen(file1,"r");	
 	if(file==NULL){
 		printf("Cannot open file\n");
 		exit(0);
@@ -43,10 +43,12 @@ int main(int argc, char** argv){
 	
 	if(strcmp(dataType,"int")==0){
 		//matrix = makeIntMatrix(numCount,file);
-		//coordMatrix = makeCoordMatrix(numCount,file,cols);
+		coordMatrix = makeCoordMatrix(numCount,file,cols);
 		//displayCoordMatrix(coordMatrix,numCount);
-		coordMatrix = makeCSRMatrix(numCount,file,rows,cols);
-		displayCSRMatrix(coordMatrix,numCount,rows);
+		intScalarMultiply(coordMatrix,numCount,4);
+		
+		//coordMatrix = makeCSRMatrix(numCount,file,rows,cols);
+		//displayCSRMatrix(coordMatrix,numCount,rows);
 		
 	}
 	else{
@@ -72,6 +74,7 @@ int main(int argc, char** argv){
 	}
 	fprintf(outFile,"%d\n%s\n%d\n%d\n\n", threads,dataType,rows,cols);
 	fprintf(outFile,"File processing time: %f\n",fileProcTimeTaken);
+	printDenseCoordMatrix(outFile,coordMatrix,numCount,rows,cols);
 	fclose(outFile);
 	
 	return 0;
