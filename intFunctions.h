@@ -7,3 +7,5 @@ int** makeCSRMatrix(int size,FILE* file, int rows, int cols);
 void displayCSRMatrix(int** matrix,int size, int rows);
 void intScalarMultiply(int** matrix,int size, int scalar);
 void printDenseCoordMatrix(FILE* file, int** matrix, int size,int rows, int cols);
+int intTraceCoordCalc(int** matrix,int size,int rows, int cols);
+int intTraceCSRCalc(int** matrix, int size, int rows, int cols);

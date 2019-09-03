@@ -99,12 +99,17 @@ int** makeCSRMatrix(int size,FILE* file, int rows, int cols){
 		}
 		totCount++;
 	}
+	while(j<=rows){ //if above calc doesn't make it to the end because there's lots of 0s, fill in the rest of the totals array
+		CSRMatrix[1][j] = rowCount;
+		j++;
+	}
+	
 	return CSRMatrix;
 }
 
 void displayCSRMatrix(int** matrix,int size, int rows){
-	for(int i=1;i<=rows;i++){
-		printf("Row Totals: %d\n",matrix[1][i]-matrix[1][i-1]);
+	for(int i=0;i<rows;i++){
+		printf("Row Totals: %d\n",matrix[1][i+1]-matrix[1][i]);
 	}
 		
 	for(int i=0;i<size;i++){
@@ -136,7 +141,6 @@ void printDenseCoordMatrix(FILE* file, int** matrix, int size,int rows, int cols
 	}	
 }
 
-//need to finish
 int intTraceCoordCalc(int** matrix,int size,int rows, int cols){
 	int tot = 0;
 	int m = 0;
@@ -146,7 +150,7 @@ int intTraceCoordCalc(int** matrix,int size,int rows, int cols){
 	}
 	else{
 		for(int i=0;i<rows;i++){
-			while(matrix[m][0] < i && matrix[m][1] < i && m < size){
+			while(m < size && (matrix[m][0] <= i || matrix[m][1] <= i) ){
 				if(matrix[m][0] == i && matrix[m][1] == i){
 					tot+= matrix[m][2];
 				}
@@ -154,6 +158,35 @@ int intTraceCoordCalc(int** matrix,int size,int rows, int cols){
 			}
 		}
 	}
+	return tot;
+}
+
+int intTraceCSRCalc(int** matrix, int size, int rows, int cols){
+	int val = 0;
+	int j = 0;
+	int count = 0;
+	int tot = 0;
+	if(rows != cols){
+		printf("Trace can only be performed on square matricies\n");
+		exit(0);
+	}
+	else{
+		for(int i=0;i<rows;i++){
+			val = matrix[1][i+1] - matrix[1][i];
+			if(val > 0){
+				count = 0;
+				while(count < val && matrix[2][j + count] <= i ){
+					if(matrix[2][j + count] == i){
+						tot+= matrix[0][j + count];
+						count = val; 
+					}
+					count++;
+				}
+			}
+			j+=val;
+		}
+	}
+	return tot;
 }
 
 
