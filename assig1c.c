@@ -17,10 +17,11 @@ int main(int argc, char** argv){
 	int** coordMatrix;
 	float* dmatrix;
 	int threads = 4;
+	int trace = 0;
 	
 	char* cmd = "tr";
 	char* file1 = "matrix2.in";
-	char* file2;
+	char* file2 = NULL;
 	
 	clock_t begin = clock();
 	
@@ -41,11 +42,16 @@ int main(int argc, char** argv){
 	printf("V1.993\n\n");
 	printf("%s\n",dataType);
 	
+	//traces are return different values! 
 	if(strcmp(dataType,"int")==0){
 		//matrix = makeIntMatrix(numCount,file);
 		coordMatrix = makeCoordMatrix(numCount,file,cols);
 		//displayCoordMatrix(coordMatrix,numCount);
-		intScalarMultiply(coordMatrix,numCount,4);
+		//coordMatrix = makeCSRMatrix(numCount,file,rows,cols);
+		//displayCSRMatrix(coordMatrix,numCount,rows);
+		//trace = intTraceCSRCalc(coordMatrix,numCount,rows,cols);
+		trace = intTraceCoordCalc(coordMatrix,numCount,rows,cols);
+		//intScalarMultiply(coordMatrix,numCount,4);
 		
 		//coordMatrix = makeCSRMatrix(numCount,file,rows,cols);
 		//displayCSRMatrix(coordMatrix,numCount,rows);
@@ -74,7 +80,8 @@ int main(int argc, char** argv){
 	}
 	fprintf(outFile,"%d\n%s\n%d\n%d\n\n", threads,dataType,rows,cols);
 	fprintf(outFile,"File processing time: %f\n",fileProcTimeTaken);
-	printDenseCoordMatrix(outFile,coordMatrix,numCount,rows,cols);
+	fprintf(outFile,"Trace: %d\n",trace);
+	//printDenseCoordMatrix(outFile,coordMatrix,numCount,rows,cols);
 	fclose(outFile);
 	
 	return 0;
