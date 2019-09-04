@@ -20,7 +20,7 @@ int main(int argc, char** argv){
 	int trace = 0;
 	
 	char* cmd = "tr";
-	char* file1 = "matrix2.in";
+	char* file1 = "matrix3.in";
 	char* file2 = NULL;
 	
 	clock_t begin = clock();
