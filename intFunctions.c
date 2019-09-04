@@ -82,20 +82,19 @@ int** makeCSRMatrix(int size,FILE* file, int rows, int cols){
 			exit(0);
 		}
 		fscanf(file,"%d\n",&val);
+		col = totCount % cols;
+		if(col ==0){
+			col = cols;
+			CSRMatrix[1][j] = rowCount;
+			j++;
+		}
 		if(val == 0){
 			i--;
 		}
 		else{
 			CSRMatrix[0][i] = val;
-			col = totCount % cols;
-			rowCount++;
-			if(col ==0){
-				col = cols;
-				CSRMatrix[1][j] = rowCount;
-				j++;
-			}
-			CSRMatrix[0][i] = val;
 			CSRMatrix[2][i] = col -1;
+			rowCount++;
 		}
 		totCount++;
 	}
