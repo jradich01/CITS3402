@@ -1,12 +1,17 @@
+struct FileInfo{
+	FILE* file;
+	//char* fileName;
+	int rows,cols,size,threads;
+	char dataType[6];
+};
 
-int* makeIntMatrix(int size, FILE* file);
-void displayIntMatrix(int* matrix, int numCount);
-int** makeCoordMatrix(int size, FILE* file,int cols);
+int** makeCoordMatrix(struct FileInfo* fInfo);
 void displayCoordMatrix(int** matrix, int size);
-int** makeCSRMatrix(int size,FILE* file, int rows, int cols);
-void displayCSRMatrix(int** matrix,int size, int rows);
+int** makeCSRMatrix(struct FileInfo* fInfo);
+void displayCSRMatrix(int** matrix,struct FileInfo* fInfo);
 void intScalarMultiply(int** matrix,int size, int scalar);
-void printDenseCoordMatrix(FILE* file, int** matrix, int size,int rows, int cols);
-int intTraceCoordCalc(int** matrix,int size,int rows, int cols);
-int intTraceCSRCalc(int** matrix, int size, int rows, int cols);
-void printDenseCSRMatrix(int** matrix, int size, int rows, int cols);
+void printDenseCoordMatrix(FILE* file, int** matrix, struct FileInfo* fInfo);
+int intTraceCoordCalc(int** matrix,struct FileInfo* fInfo);
+int intTraceCSRCalc(int** matrix, struct FileInfo* fInfo);
+void printDenseCSRMatrix(int** matrix, struct FileInfo* fInfo);
+

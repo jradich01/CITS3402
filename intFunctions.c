@@ -2,48 +2,30 @@
 #include<stdlib.h>
 #include"intFunctions.h"
 
-int* makeIntMatrix(int size, FILE* file){
-	int* arr = malloc(sizeof(int)*size);
-	for(int i=0;i<size;i++){
-		if(feof(file)){
-			printf("Not enough numbers provided\n");
-			exit(0);
-		}
-		fscanf(file,"%d",&arr[i]);
-		if(arr[i]==0)i--;
-	}
-	return arr;
-}
-
-void displayIntMatrix(int* matrix, int numCount){
-	for(int i=0;i<numCount;i++){
-		printf("%d\n",matrix[i]);
-	}	
-}
-
-int** makeCoordMatrix(int size, FILE* file,int cols){
-	int** coordMatrix = malloc(sizeof(int*)*size);
+int** makeCoordMatrix(struct FileInfo* fInfo){
+	int arrSize = fInfo->size;
+	int** coordMatrix = malloc(sizeof(int*)*arrSize);
 	int row = 0;
 	int col = 0;
 	int val = 0;
 	int totCount = 1;
 	
-	for(int i=0;i<size;i++){
+	for(int i=0;i<arrSize;i++){
 		
-		if(feof(file)){
+		if(feof(fInfo->file)){
 			printf("Not enough numbers provided\n");
 			exit(0);
 		}
-		fscanf(file,"%d\n",&val);
+		fscanf(fInfo->file,"%d\n",&val);
 		if(val ==0){
 			i--;
 		}
 		else{
 			coordMatrix[i] = (int*)malloc(sizeof(int)*3);
-			row = totCount / cols;
-			col = totCount % cols;
+			row = totCount / fInfo->cols;
+			col = totCount % fInfo->cols;
 			if(col ==0){
-				col = cols;
+				col = fInfo->cols;
 			}
 			else{
 				row++;
@@ -65,7 +47,10 @@ void displayCoordMatrix(int** matrix, int size){
 }
 
 //might change to while loop and stop i-- for each iteration
-int** makeCSRMatrix(int size,FILE* file, int rows, int cols){
+int** makeCSRMatrix(struct FileInfo* fInfo){
+	int size = fInfo->size;
+	int rows = fInfo->rows;
+	int cols = fInfo->cols;
 	int val = 0;
 	int col = 0;
 	int j = 0;
@@ -77,11 +62,11 @@ int** makeCSRMatrix(int size,FILE* file, int rows, int cols){
 	CSRMatrix[2] = (int*)malloc(sizeof(int)*size);
 	CSRMatrix[1][0] = 0; j++;
 	for(int i=0;i<size;i++){
-		if(feof(file)){
+		if(feof(fInfo->file)){
 			printf("Not enough numbers provided\n");
 			exit(0);
 		}
-		fscanf(file,"%d\n",&val);
+		fscanf(fInfo->file,"%d\n",&val);
 		col = totCount % cols;
 		if(col ==0){
 			col = cols;
@@ -108,7 +93,10 @@ int** makeCSRMatrix(int size,FILE* file, int rows, int cols){
 	return CSRMatrix;
 }
 
-void displayCSRMatrix(int** matrix,int size, int rows){
+void displayCSRMatrix(int** matrix,struct FileInfo* fInfo){
+	int size = fInfo->size;
+	int rows = fInfo->rows;
+	
 	FILE* f = fopen("CSRM.out","w");
 	for(int i=0;i<rows;i++){
 		fprintf(f,"Row Totals: %d\n",matrix[1][i+1]-matrix[1][i]);
@@ -126,7 +114,10 @@ void intScalarMultiply(int** matrix,int size, int scalar){
 	}
 }
 
-void printDenseCoordMatrix(FILE* file, int** matrix, int size,int rows, int cols){
+void printDenseCoordMatrix(FILE* file, int** matrix, struct FileInfo* fInfo){
+	int size = fInfo->size;
+	int rows = fInfo->rows;
+	int cols = fInfo->cols;
 	int matrixCounter =0;
 	int val = 0;
 	for(int i=0; i<rows; i++){
@@ -144,7 +135,10 @@ void printDenseCoordMatrix(FILE* file, int** matrix, int size,int rows, int cols
 	}	
 }
 
-int intTraceCoordCalc(int** matrix,int size,int rows, int cols){
+int intTraceCoordCalc(int** matrix,struct FileInfo* fInfo){
+	int size = fInfo->size;
+	int rows = fInfo->rows;
+	int cols = fInfo->cols;
 	int tot = 0;
 	int m = 0;
 	if(rows != cols){
@@ -167,7 +161,10 @@ int intTraceCoordCalc(int** matrix,int size,int rows, int cols){
 	return tot;
 }
 
-int intTraceCSRCalc(int** matrix, int size, int rows, int cols){
+int intTraceCSRCalc(int** matrix, struct FileInfo* fInfo){
+	int size = fInfo->size;
+	int rows = fInfo->rows;
+	int cols = fInfo->cols;
 	int val = 0;
 	int j = 0;
 	int count = 0;
@@ -197,14 +194,17 @@ int intTraceCSRCalc(int** matrix, int size, int rows, int cols){
 	}
 	return tot;
 }
-//not finished, need to add totalCount as well
-void printDenseCSRMatrix(int** matrix, int size, int rows, int cols){
-	FILE* f = fopen("printCSR.out","w");
+
+void printDenseCSRMatrix(int** matrix, struct FileInfo* fInfo){
+	int size = fInfo->size;
+	int rows = fInfo->rows;
+	int cols = fInfo->cols;	
 	int numInRow = 0;
 	int totCount = 0;
 	int count =0;
 	int val = 0;
 	
+	FILE* f = fopen("printCSR.out","w");
 	for(int j=0;j<rows;j++){
 		numInRow = matrix[1][j+1] - matrix[1][j];
 		count = 0;
