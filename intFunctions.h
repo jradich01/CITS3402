@@ -9,3 +9,4 @@ void intScalarMultiply(int** matrix,int size, int scalar);
 void printDenseCoordMatrix(FILE* file, int** matrix, int size,int rows, int cols);
 int intTraceCoordCalc(int** matrix,int size,int rows, int cols);
 int intTraceCSRCalc(int** matrix, int size, int rows, int cols);
+void printDenseCSRMatrix(int** matrix, int size, int rows, int cols);

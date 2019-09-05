@@ -85,8 +85,6 @@ int** makeCSRMatrix(int size,FILE* file, int rows, int cols){
 		col = totCount % cols;
 		if(col ==0){
 			col = cols;
-			CSRMatrix[1][j] = rowCount;
-			j++;
 		}
 		if(val == 0){
 			i--;
@@ -95,6 +93,10 @@ int** makeCSRMatrix(int size,FILE* file, int rows, int cols){
 			CSRMatrix[0][i] = val;
 			CSRMatrix[2][i] = col -1;
 			rowCount++;
+		}
+		if(col == cols){
+			CSRMatrix[1][j] = rowCount;
+			j++;
 		}
 		totCount++;
 	}
@@ -107,13 +109,15 @@ int** makeCSRMatrix(int size,FILE* file, int rows, int cols){
 }
 
 void displayCSRMatrix(int** matrix,int size, int rows){
+	FILE* f = fopen("CSRM.out","w");
 	for(int i=0;i<rows;i++){
-		printf("Row Totals: %d\n",matrix[1][i+1]-matrix[1][i]);
+		fprintf(f,"Row Totals: %d\n",matrix[1][i+1]-matrix[1][i]);
 	}
 		
 	for(int i=0;i<size;i++){
-		printf("Col: %d\n Value: %d\n",matrix[2][i],matrix[0][i]);
+		fprintf(f,"Col: %d\n Value: %d\n",matrix[2][i],matrix[0][i]);
 	}
+	fclose(f);
 }
 
 void intScalarMultiply(int** matrix,int size, int scalar){
@@ -148,14 +152,17 @@ int intTraceCoordCalc(int** matrix,int size,int rows, int cols){
 		exit(0);
 	}
 	else{
+		FILE* f = fopen("coord.out","w");
 		for(int i=0;i<rows;i++){
 			while(m < size && (matrix[m][0] <= i || matrix[m][1] <= i) ){
 				if(matrix[m][0] == i && matrix[m][1] == i){
+					fprintf(f,"R:%d C:%d V:%d\n",matrix[m][0],matrix[m][1],matrix[m][2]);
 					tot+= matrix[m][2];
 				}
 				m++;
 			}
 		}
+		fclose(f);
 	}
 	return tot;
 }
@@ -170,12 +177,14 @@ int intTraceCSRCalc(int** matrix, int size, int rows, int cols){
 		exit(0);
 	}
 	else{
+		FILE* f = fopen("CSR.out","w");
 		for(int i=0;i<rows;i++){
 			val = matrix[1][i+1] - matrix[1][i];
 			if(val > 0){
 				count = 0;
 				while(count < val && matrix[2][j + count] <= i ){
 					if(matrix[2][j + count] == i){
+						fprintf(f,"R:%d Val:%d\n",matrix[2][j + count],matrix[0][j+count]);
 						tot+= matrix[0][j + count];
 						count = val; 
 					}
@@ -184,8 +193,34 @@ int intTraceCSRCalc(int** matrix, int size, int rows, int cols){
 			}
 			j+=val;
 		}
+		fclose(f);
 	}
 	return tot;
+}
+//not finished, need to add totalCount as well
+void printDenseCSRMatrix(int** matrix, int size, int rows, int cols){
+	FILE* f = fopen("printCSR.out","w");
+	int numInRow = 0;
+	int totCount = 0;
+	int count =0;
+	int val = 0;
+	
+	for(int j=0;j<rows;j++){
+		numInRow = matrix[1][j+1] - matrix[1][j];
+		count = 0;
+		for(int i=0;i<cols;i++){
+			val = 0;
+			if(count < numInRow && matrix[2][totCount + count] == i){
+				val = matrix[0][totCount + count];
+				count++;
+			}
+			fprintf(f,"%d ",val);
+		}
+		fprintf(f,"\n");
+		totCount += count;
+	}
+	
+	fclose(f);
 }
 
 

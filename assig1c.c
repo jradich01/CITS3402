@@ -20,7 +20,7 @@ int main(int argc, char** argv){
 	int trace = 0;
 	
 	char* cmd = "tr";
-	char* file1 = "matrix3.in";
+	char* file1 = "matrix2.in";
 	char* file2 = NULL;
 	
 	clock_t begin = clock();
@@ -39,18 +39,19 @@ int main(int argc, char** argv){
 	fseek(file,loc,SEEK_SET);
 	
 	printf("Size %d\n",numCount);
-	printf("V1.993\n\n");
+	printf("V1.995\n\n");
 	printf("%s\n",dataType);
 	
 	//traces are return different values! 
 	if(strcmp(dataType,"int")==0){
 		//matrix = makeIntMatrix(numCount,file);
-		coordMatrix = makeCoordMatrix(numCount,file,cols);
+		//coordMatrix = makeCoordMatrix(numCount,file,cols);
 		//displayCoordMatrix(coordMatrix,numCount);
-		//coordMatrix = makeCSRMatrix(numCount,file,rows,cols);
+		coordMatrix = makeCSRMatrix(numCount,file,rows,cols);
+		//printDenseCSRMatrix(coordMatrix,numCount,rows,cols);
 		//displayCSRMatrix(coordMatrix,numCount,rows);
-		//trace = intTraceCSRCalc(coordMatrix,numCount,rows,cols);
-		trace = intTraceCoordCalc(coordMatrix,numCount,rows,cols);
+		trace = intTraceCSRCalc(coordMatrix,numCount,rows,cols);
+		//trace = intTraceCoordCalc(coordMatrix,numCount,rows,cols);
 		//intScalarMultiply(coordMatrix,numCount,4);
 		
 		//coordMatrix = makeCSRMatrix(numCount,file,rows,cols);

@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv){
 	
-	const int NUMS = 1000000;
+	const int NUMS = 100;
 	int num = 0;
 	FILE* file;
 	file = fopen("nums.txt","w");
