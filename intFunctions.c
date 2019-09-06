@@ -1,6 +1,8 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include"matrixStructures.h"
 #include"intFunctions.h"
+
 
 int** makeCoordMatrix(struct FileInfo* fInfo){
 	int arrSize = fInfo->size;
@@ -114,12 +116,13 @@ void intScalarMultiply(int** matrix,int size, int scalar){
 	}
 }
 
-void printDenseCoordMatrix(FILE* file, int** matrix, struct FileInfo* fInfo){
-	int size = fInfo->size;
-	int rows = fInfo->rows;
-	int cols = fInfo->cols;
+void printDenseCoordMatrix(int** matrix, int size, int rows, int cols){
+	//int size = fInfo->size;
+	//int rows = fInfo->rows;
+	//int cols = fInfo->cols;
 	int matrixCounter =0;
 	int val = 0;
+	FILE* file = fopen("DenseCoordMatrix.out","w");
 	for(int i=0; i<rows; i++){
 		for(int j=0; j<cols; j++){
 			val = 0;
@@ -132,7 +135,8 @@ void printDenseCoordMatrix(FILE* file, int** matrix, struct FileInfo* fInfo){
 			fprintf(file,"%d ",val);
 		}
 		fprintf(file,"\n");
-	}	
+	}
+	fclose(file);
 }
 
 int intTraceCoordCalc(int** matrix,struct FileInfo* fInfo){
@@ -221,6 +225,96 @@ void printDenseCSRMatrix(int** matrix, struct FileInfo* fInfo){
 	}
 	
 	fclose(f);
+}
+
+int** coordMatrixAddition(int** matrix1, int size1, int** matrix2, int size2, int* matrix3Size){
+	int** matrix3 = malloc(sizeof(int*)*(size1+size2));  //might be oversize but will fit worst case scenario
+	int val = 0;
+	int size3 = 0;
+	int s1Count=0;
+	int s2Count=0;
+	int nextRow = 0;
+	int nextCol = 0;
+	
+	while(s1Count < size1 || s2Count < size2){
+		if(matrix1[s1Count][0] < matrix2[s2Count][0]){
+			nextRow = matrix1[s1Count][0];
+			nextCol = matrix1[s1Count][1];
+			val = matrix1[s1Count][2];
+			s1Count++;
+		}		
+		else if(matrix1[s1Count][0] > matrix2[s2Count][0]){
+			nextRow = matrix2[s2Count][0];
+			nextCol = matrix2[s2Count][1];
+			val = matrix2[s2Count][2];
+			s2Count++;
+		}	
+		else{
+			nextRow = matrix1[s1Count][0];
+			if(matrix1[s1Count][1] < matrix2[s2Count][1]){
+				nextCol = matrix1[s1Count][1];
+				val = matrix1[s1Count][2];
+				s1Count++;
+			}
+			else if(matrix1[s1Count][1] > matrix2[s2Count][1]){
+				nextCol = matrix2[s2Count][1];
+				val = matrix2[s2Count][2];
+				s2Count++;
+			}
+			else{
+				nextCol = matrix1[s1Count][1];
+				val = matrix1[s1Count][2] + matrix2[s2Count][2];
+				s1Count++;
+				s2Count++;
+			}
+		}
+		matrix3[size3] = (int*)malloc(sizeof(int)*3);
+		matrix3[size3][0] = nextRow;
+		matrix3[size3][1] = nextCol;
+		matrix3[size3][2] = val;
+		size3++;
+	}
+	*matrix3Size = size3;
+	return matrix3;
+}
+
+void transposeMatrix(int** matrix, int size){
+	int temp = 0;
+	int temp2 = 0;
+	int temp3 = 0;
+	int j=0;
+
+	for(int i=0;i<size;i++){
+		temp = matrix[i][0];
+		matrix[i][0] = matrix[i][1];
+		matrix[i][1] = temp;
+	}
+
+	printf("cool");
+	
+	for(int i=0;i<size-1;i++){
+		if(matrix[i+1][0] < matrix[i][0]){
+			j=i;
+			while(j>=0 && matrix[j+1][0] < matrix[j][0]){
+				
+				temp = matrix[j+1][0];
+				matrix[j+1][0] = matrix[j][0];
+				matrix[j][0] = temp;
+
+				temp2 = matrix[j+1][1];
+				matrix[j+1][1] = matrix[j][1];
+				matrix[j][1] = temp2;
+
+				temp3 = matrix[j+1][2];
+				matrix[j+1][2] = matrix[j][2];
+				matrix[j][2] = temp3;
+				
+				j--;					
+			}
+			i=j;
+		}
+	}
+	
 }
 
 
