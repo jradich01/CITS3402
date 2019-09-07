@@ -1,9 +1,9 @@
 ts
-matrix6.in
+matrix2.in
 4
 int
-5
-2
+1000
+1000
 
-File processing time: 0.000000
+File processing time: 22.343000
 Trace: 1

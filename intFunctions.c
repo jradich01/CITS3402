@@ -278,6 +278,44 @@ int** coordMatrixAddition(int** matrix1, int size1, int** matrix2, int size2, in
 	return matrix3;
 }
 
+/*
+void transposeMatrix(int** matrix, int size, int cols){
+	
+	int temp = 0;
+	int marker[cols];
+	
+	for(int i=0;i<cols;i++){
+		marker[i] = -1;
+	}
+	
+	for(int i=0;i<size;i++){
+		temp = matrix[i][0];
+		matrix[i][0] = matrix[i][1];
+		matrix[i][1] = temp;
+	}
+	
+	for(int i =0; i<size-1;i++){
+		if(matrix[i+1][0] < matrix[i][0]){
+			j=matrix[i+1][0];
+			while(j>0 && marker[j] != -1){
+				j--;
+			}
+			j = marker[j];
+			if(j == -1){
+				j = 0;
+			}
+			
+			temp = matrix[j][0];
+			temp2 = matrix[j][1];
+			
+			
+		}
+		else{
+			marker[matrix[i][0]] = i;
+		}
+	}
+}*/
+
 void transposeMatrix(int** matrix, int size){
 	int temp = 0;
 	int temp2 = 0;
@@ -289,8 +327,6 @@ void transposeMatrix(int** matrix, int size){
 		matrix[i][0] = matrix[i][1];
 		matrix[i][1] = temp;
 	}
-
-	printf("cool");
 	
 	for(int i=0;i<size-1;i++){
 		if(matrix[i+1][0] < matrix[i][0]){
@@ -311,7 +347,7 @@ void transposeMatrix(int** matrix, int size){
 				
 				j--;					
 			}
-			i=j;
+			//i=j;
 		}
 	}
 	
