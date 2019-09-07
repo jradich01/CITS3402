@@ -310,6 +310,7 @@ void transposeMatrix(int** matrix, int size){
 	}	
 }
 
+/*
 void coordMatrixMultiply(int** matrix1, int size1,int rows1, int** matrix2, int size2){
 	
 	int rowVal = 0;
@@ -324,10 +325,14 @@ void coordMatrixMultiply(int** matrix1, int size1,int rows1, int** matrix2, int 
 	int val = 0;
 	int found = 0;
 	int finalVal = 0;
-	int newMatrixCol =0;
+	int matrix2Col =0;
+	//highly unlikely matrix will created a bigger one, so just use biggest size.
+	int bigger = size1 > size2? size1 : size2;
+	int** newMatrix = malloc(sizeof(int*)*bigger;
 	
 	
-	//need to increment rowVal, also newMatrixCol, need to somehow create an array for new values. 
+	//need to increment rowVal, also newMatrixCol, need to somehow create an array for new values.
+	
 	while(i<size1 && matrix1[i][0] == rowVal){
 		colVal = matrix1[i][1];
 		val = matrix[i][2];
@@ -366,6 +371,43 @@ void coordMatrixMultiply(int** matrix1, int size1,int rows1, int** matrix2, int 
 	}
 	
 	
+} */
+ 
+//I think this works as a very inefficient bare bones.
+// can be improved that it doesnt record the start and end point for the
+// row value, doesn't record where the values are in the second matrix 
+// if it has to traverse a second time, but need to get cracking on 
+//parallel shite, so get this working, get everything working to spec
+// do parallel and then tweak functions.
+void coordMatrixMultiply(int** matrix1, int size1, int rows1, int** matrix2, int size2, int cols2){
+	
+	int c1=0, c2=0, c3=0, val=0, totVal=0;
+	int size3 = size1 > size2 ? size1:size2;
+	int** matrix3 = malloc(sizeof(int*)*size3);
+	for(int i=0; i<rows1; i++){
+		for(int j=0; j<cols2; j++){
+			c1=0;
+			totVal=0;
+			while(matrix1[c1][0] == i){
+				while(c2<size2){
+					c2=0;
+					if(matrix1[c1][0] == matrix2[c2][1] && matrix1[c1][1] == matrix2[c2][0]){
+						val = matrix1[c1][2] * matrix2[c2][2];
+						c2=size2;
+					}
+				}
+				totVal += val;
+				c1++;
+			}
+			if(totVal > 0){
+				matrix3[c3] = (int*)malloc(sizeof(int)*3);
+				matrix3[c3][0] = i;
+				matrix3[c3][1] = j;
+				matrix3[c3][2] = totVal;
+				c3++;
+			}
+		}
+	}
 }
 
 
