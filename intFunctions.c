@@ -117,9 +117,6 @@ void intScalarMultiply(int** matrix,int size, int scalar){
 }
 
 void printDenseCoordMatrix(int** matrix, int size, int rows, int cols){
-	//int size = fInfo->size;
-	//int rows = fInfo->rows;
-	//int cols = fInfo->cols;
 	int matrixCounter =0;
 	int val = 0;
 	FILE* file = fopen("DenseCoordMatrix.out","w");
@@ -278,44 +275,6 @@ int** coordMatrixAddition(int** matrix1, int size1, int** matrix2, int size2, in
 	return matrix3;
 }
 
-/*
-void transposeMatrix(int** matrix, int size, int cols){
-	
-	int temp = 0;
-	int marker[cols];
-	
-	for(int i=0;i<cols;i++){
-		marker[i] = -1;
-	}
-	
-	for(int i=0;i<size;i++){
-		temp = matrix[i][0];
-		matrix[i][0] = matrix[i][1];
-		matrix[i][1] = temp;
-	}
-	
-	for(int i =0; i<size-1;i++){
-		if(matrix[i+1][0] < matrix[i][0]){
-			j=matrix[i+1][0];
-			while(j>0 && marker[j] != -1){
-				j--;
-			}
-			j = marker[j];
-			if(j == -1){
-				j = 0;
-			}
-			
-			temp = matrix[j][0];
-			temp2 = matrix[j][1];
-			
-			
-		}
-		else{
-			marker[matrix[i][0]] = i;
-		}
-	}
-}*/
-
 void transposeMatrix(int** matrix, int size){
 	int temp = 0;
 	int temp2 = 0;
@@ -347,9 +306,65 @@ void transposeMatrix(int** matrix, int size){
 				
 				j--;					
 			}
-			//i=j;
 		}
+	}	
+}
+
+void coordMatrixMultiply(int** matrix1, int size1,int rows1, int** matrix2, int size2){
+	
+	int rowVal = 0;
+	int colVal = 0;
+	int i=0;
+	int k=0;
+	int min = 0;
+	int max = 0;
+	int* index = malloc(sizeof(int)*rows1);
+	int indexSize=0;
+	int firstIt = 0;
+	int val = 0;
+	int found = 0;
+	int finalVal = 0;
+	int newMatrixCol =0;
+	
+	
+	//need to increment rowVal, also newMatrixCol, need to somehow create an array for new values. 
+	while(i<size1 && matrix1[i][0] == rowVal){
+		colVal = matrix1[i][1];
+		val = matrix[i][2];
+		found = 0;
+		if(firstIt ==0){
+			for(int j=0;j<size2;j++){
+				if(matrix[j][1] == rowVal){
+					index[indexSize] = j;
+					indexSize++;
+					if(matrix2[j][0] == colVal){
+						val*= matrix2[j][2];
+						found = 1;
+					}
+				}
+			}
+			if(found ==0){
+				val = 0;
+			}
+			firstIt = 1;
+		}
+		else{
+			k = 0;
+			while(k<indexSize && matrix2[index[k]][0] <= colVal && found ==0){
+				if(matrix2[index[k]][0] == colVal){
+					val *= matrix2[index[k]][2];
+					found = 1;
+				}
+				k++;
+			}
+			if(found ==0){
+				val = 0;
+			}
+		}
+		finalVal += val;		
+		i++;
 	}
+	
 	
 }
 
