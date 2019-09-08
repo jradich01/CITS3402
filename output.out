@@ -1,9 +1,10 @@
-ts
-matrix2.in
+mm
+matrix4.in
+matrix4.in
 4
 int
-1000
-1000
+3
+3
 
-File processing time: 22.343000
-Trace: 1
+File processing time: 0.000000
+Trace: 0

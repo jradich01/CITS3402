@@ -379,17 +379,26 @@ void coordMatrixMultiply(int** matrix1, int size1,int rows1, int** matrix2, int 
 // if it has to traverse a second time, but need to get cracking on 
 //parallel shite, so get this working, get everything working to spec
 // do parallel and then tweak functions.
-void coordMatrixMultiply(int** matrix1, int size1, int rows1, int** matrix2, int size2, int cols2){
+int** coordMatrixMultiply(int** matrix1, int size1, int rows1, int cols1, int** matrix2, int size2, int rows2, int cols2, int* mSize3){
+	//needs debugging
+	if(cols1 != rows2){
+		printf("Colums of Matrix 1 and rows of Matrix 2 must be equal\n");
+		exit(0);
+	}
 	
 	int c1=0, c2=0, c3=0, val=0, totVal=0;
 	int size3 = size1 > size2 ? size1:size2;
 	int** matrix3 = malloc(sizeof(int*)*size3);
 	for(int i=0; i<rows1; i++){
+		printf("Here 1\n");
 		for(int j=0; j<cols2; j++){
+			printf("here 2\n");
 			c1=0;
 			totVal=0;
 			while(matrix1[c1][0] == i){
+				printf("here 3\n");
 				while(c2<size2){
+					printf("here 4\n");
 					c2=0;
 					if(matrix1[c1][0] == matrix2[c2][1] && matrix1[c1][1] == matrix2[c2][0]){
 						val = matrix1[c1][2] * matrix2[c2][2];
@@ -399,7 +408,14 @@ void coordMatrixMultiply(int** matrix1, int size1, int rows1, int** matrix2, int
 				totVal += val;
 				c1++;
 			}
+			
 			if(totVal > 0){
+				printf("Val %d\n",totVal);
+				if(c3 > size3){
+					printf("Soz, not enoguh room!!\n");
+					exit(0);
+				}
+				
 				matrix3[c3] = (int*)malloc(sizeof(int)*3);
 				matrix3[c3][0] = i;
 				matrix3[c3][1] = j;
@@ -408,6 +424,8 @@ void coordMatrixMultiply(int** matrix1, int size1, int rows1, int** matrix2, int
 			}
 		}
 	}
+	mSize3 = &c3;
+	return matrix3;
 }
 
 

@@ -25,6 +25,9 @@ int main(int argc, char** argv){
 		initialiseFileInfo(&f2,r1.fileName2,4);
 	}
 	printf("And hereb %d\n",command);
+	int** intMatrix2;
+	int** intMatrix3;
+	int matrix3Size = 0;
 	switch(command){
 		case 1: //scalar
 			intMatrix = makeCoordMatrix(&f1);
@@ -52,19 +55,19 @@ int main(int argc, char** argv){
 				exit(0);
 			}
 			intMatrix = makeCoordMatrix(&f1); 
-			int** intMatrix2 = makeCoordMatrix(&f2); 
-			int matrix3Size = 0;
-			int** intMatrix3 = coordMatrixAddition(intMatrix,f1.size,intMatrix2,f2.size,&matrix3Size); 
+			intMatrix2 = makeCoordMatrix(&f2); 
+			intMatrix3 = coordMatrixAddition(intMatrix,f1.size,intMatrix2,f2.size,&matrix3Size); 
 			printDenseCoordMatrix(intMatrix3,matrix3Size,f1.rows,f1.cols);
 			//printf("%d %d",f1.size,f2.size);
 			//int intMatrix3Size = coordMatrixAddition(intMatrix,f1.size,intMatrix2,f2.size,intMatrix3);
 			//printf("aaa %d\n",matrix3Size);
 			//displayCoordMatrix(intMatrix3,matrix3Size);
 			break;
-		case 5: // multiply
-				//r1xc1 r2xc2  c1 == r2.  creates a r1xc2 matrix
-			printf("Not Implemented yet\n");
-			exit(0);
+		case 5: // multiply //r1xc1 r2xc2  c1 == r2.  creates a r1xc2 matrix
+			intMatrix = makeCoordMatrix(&f1);
+			intMatrix2 = makeCoordMatrix(&f2);
+			intMatrix3 = coordMatrixMultiply(intMatrix,f1.size,f1.rows,f1.cols,intMatrix2,f2.size,f2.rows,f2.cols,&matrix3Size);
+			printDenseCoordMatrix(intMatrix3,matrix3Size,f1.rows,f2.cols);
 			break;
 		default:
 			printf("Unknown error\n");
