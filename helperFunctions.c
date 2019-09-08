@@ -3,6 +3,7 @@
 #include <string.h>
 #include "matrixStructures.h"
 #include "helperFunctions.h"
+#include "intFunctions.h"
 
 int arraySearch(char* cmd, char** arr, int size){
 	int cell = -1;
@@ -15,7 +16,7 @@ int arraySearch(char* cmd, char** arr, int size){
 	return cell;
 }
 
-int processCommands(int argc, char** argv, struct ReportData* r1){
+void processCommands(int argc, char** argv, struct ReportData* r1){
 	
 	int cell = -1;
 	int command = 0;
@@ -42,7 +43,6 @@ int processCommands(int argc, char** argv, struct ReportData* r1){
 		r1->cmd = "sc";
 	}
 	else if((cell = arraySearch("-tr",argv,argc)) >-1){
-		printf("%d\n",cell);
 		command = 2;
 		filesReq = 1;
 		r1->cmd = "tr";
@@ -72,37 +72,31 @@ int processCommands(int argc, char** argv, struct ReportData* r1){
 		exit(0);
 	}
 	
-	printf("%d %s\n",cell,argv[0]);
 	if(argc < (cell + filesReq + 1)){
 		printf("Not enough parameters 2\n");
 		exit(0);
 	}
-	//cell = arraySearch("-f",argv,argc);
 	r1->fileName1 = argv[cell+1];
-	//r1->fileName2 = argv[cell+1];
-	
-	printf("%s\n",r1->fileName1);
-	printf("Got to here %d %d\n",filesReq, argc);
 	
 	if(filesReq == 2){
-		//printf("yeah! %s",argv[cell+2]);
-		//r1->fileName1 = malloc(sizeof(char)*50);
 		r1->fileName2 = argv[cell+2];
 	}
 	else{
-		//printf("nah");
 		r1->fileName2 = NULL;
 	}
 	
-	return command;
+	r1->log = 0;
+	if((cell = arraySearch("-l",argv,argc))>-1){
+		r1->log = 1;
+	}
+
+	r1->command = command;
 }
 
 
-void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct ReportData* r1){
-	printf("Size %d\n",f1->size);
-	printf("V1.995\n\n");
-	printf("%s\n",f1->dataType);
-	printf("Total time taken: %f\n",r1->fileProcTimeTaken);
+void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3, struct ReportData* r1){
+	
+	r1->threads = 1;  //update when multi threading
 	
 	FILE* outFile = fopen("output.out","w");
 	if(outFile == NULL){
@@ -113,10 +107,22 @@ void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct ReportData
 	if(r1->fileName2 != NULL){
 		fprintf(outFile,"%s\n",r1->fileName2);
 	}
-	fprintf(outFile,"%d\n%s\n%d\n%d\n\n", f1->threads,f1->dataType,f1->rows,f1->cols);
+	fprintf(outFile,"%d\n%s\n%d\n%d\n\n", r1->threads,f1->dataType,f1->rows,f1->cols);
 	fprintf(outFile,"File processing time: %f\n",r1->fileProcTimeTaken);
-	fprintf(outFile,"Trace: %d\n",r1->trace);
-	//printDenseCoordMatrix(outFile,coordMatrix,numCount,rows,cols);
+	fprintf(outFile,"Calculation processing time: %f\n",r1->calcProcTimeTaken);
+	
+	if(r1->log ==1){
+		if(r1->command == 1 || r1->command == 3){
+			printDenseCoordMatrix(f1,outFile);
+		}
+		else if(r1->command == 4 || r1->command ==5){
+			printDenseCoordMatrix(f3,outFile);
+		}
+		else{
+			fprintf(outFile,"Trace: %d\n",r1->trace);
+		}
+	}
+
 	fclose(outFile);
 }	
 
@@ -132,7 +138,7 @@ int getArraySize(FILE* file){
 	return count;	
 }
 
-void initialiseFileInfo(struct FileInfo* fInfo, char* fileName, int threads){
+void initialiseFileInfo(struct FileInfo* fInfo, char* fileName){
 	int loc = 0;
 	
 	fInfo->file = fopen(fileName,"r");
@@ -140,9 +146,6 @@ void initialiseFileInfo(struct FileInfo* fInfo, char* fileName, int threads){
 		printf("Unable to open file: %s\n",fileName);
 		exit(0);
 	}
-	
-	//fInfo->fileName = fileName;
-	fInfo->threads = threads;
 	fscanf(fInfo->file,"%s %d %d",fInfo->dataType,&fInfo->rows,&fInfo->cols);
 	
 	loc = ftell(fInfo->file);

@@ -3,8 +3,7 @@
 #include"matrixStructures.h"
 #include"intFunctions.h"
 
-
-int** makeCoordMatrix(struct FileInfo* fInfo){
+void makeCoordMatrix(struct FileInfo* fInfo){
 	int arrSize = fInfo->size;
 	int** coordMatrix = malloc(sizeof(int*)*arrSize);
 	int row = 0;
@@ -38,8 +37,8 @@ int** makeCoordMatrix(struct FileInfo* fInfo){
 		}
 		totCount++;
 	}
-
-	return coordMatrix;
+	fInfo->matrix = coordMatrix;
+	
 }
 
 void displayCoordMatrix(int** matrix, int size){
@@ -48,7 +47,6 @@ void displayCoordMatrix(int** matrix, int size){
 	}
 }
 
-//might change to while loop and stop i-- for each iteration
 int** makeCSRMatrix(struct FileInfo* fInfo){
 	int size = fInfo->size;
 	int rows = fInfo->rows;
@@ -110,22 +108,21 @@ void displayCSRMatrix(int** matrix,struct FileInfo* fInfo){
 	fclose(f);
 }
 
-void intScalarMultiply(int** matrix,int size, int scalar){
-	for(int i=0; i<size; i++){
-		matrix[i][2] *= scalar;
+void intScalarMultiply(struct FileInfo* f1, int scalar){
+	for(int i=0; i<f1->size; i++){
+		f1->matrix[i][2] *= scalar;
 	}
 }
 
-void printDenseCoordMatrix(int** matrix, int size, int rows, int cols){
+void printDenseCoordMatrix(struct FileInfo* f1, FILE* file){
 	int matrixCounter =0;
 	int val = 0;
-	FILE* file = fopen("DenseCoordMatrix.out","w");
-	for(int i=0; i<rows; i++){
-		for(int j=0; j<cols; j++){
+	for(int i=0; i<f1->rows; i++){
+		for(int j=0; j<f1->cols; j++){
 			val = 0;
-			if(matrixCounter<size){
-				if(matrix[matrixCounter][0]==i && matrix[matrixCounter][1]==j){
-					val = matrix[matrixCounter][2]; 
+			if(matrixCounter<f1->size){
+				if(f1->matrix[matrixCounter][0]==i && f1->matrix[matrixCounter][1]==j){
+					val = f1->matrix[matrixCounter][2]; 
 					matrixCounter++;
 				}
 			}
@@ -133,13 +130,13 @@ void printDenseCoordMatrix(int** matrix, int size, int rows, int cols){
 		}
 		fprintf(file,"\n");
 	}
-	fclose(file);
 }
 
-int intTraceCoordCalc(int** matrix,struct FileInfo* fInfo){
+int intTraceCoordCalc(struct FileInfo* fInfo){
 	int size = fInfo->size;
 	int rows = fInfo->rows;
 	int cols = fInfo->cols;
+	int** matrix = fInfo->matrix;
 	int tot = 0;
 	int m = 0;
 	if(rows != cols){
@@ -162,10 +159,11 @@ int intTraceCoordCalc(int** matrix,struct FileInfo* fInfo){
 	return tot;
 }
 
-int intTraceCSRCalc(int** matrix, struct FileInfo* fInfo){
+int intTraceCSRCalc(struct FileInfo* fInfo){
 	int size = fInfo->size;
 	int rows = fInfo->rows;
 	int cols = fInfo->cols;
+	int** matrix = fInfo->matrix;
 	int val = 0;
 	int j = 0;
 	int count = 0;
@@ -224,7 +222,15 @@ void printDenseCSRMatrix(int** matrix, struct FileInfo* fInfo){
 	fclose(f);
 }
 
-int** coordMatrixAddition(int** matrix1, int size1, int** matrix2, int size2, int* matrix3Size){
+void coordMatrixAddition(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
+	
+	if(f1->rows != f2->rows || f1->cols != f2->cols){
+		printf("Matrix dimensions must be the same\n");
+		exit(0);
+	}
+	int size1 = f1->size;
+	int size2 = f2->size;
+	
 	int** matrix3 = malloc(sizeof(int*)*(size1+size2));  //might be oversize but will fit worst case scenario
 	int val = 0;
 	int size3 = 0;
@@ -232,6 +238,8 @@ int** coordMatrixAddition(int** matrix1, int size1, int** matrix2, int size2, in
 	int s2Count=0;
 	int nextRow = 0;
 	int nextCol = 0;
+	int** matrix1 = f1->matrix;
+	int** matrix2 = f2->matrix;
 	
 	while(s1Count < size1 || s2Count < size2){
 		if(matrix1[s1Count][0] < matrix2[s2Count][0]){
@@ -271,23 +279,24 @@ int** coordMatrixAddition(int** matrix1, int size1, int** matrix2, int size2, in
 		matrix3[size3][2] = val;
 		size3++;
 	}
-	*matrix3Size = size3;
-	return matrix3;
+	f3->matrix = matrix3;
+	f3->size = size3;
 }
 
-void transposeMatrix(int** matrix, int size){
+void transposeMatrix(struct FileInfo* f1){
 	int temp = 0;
 	int temp2 = 0;
 	int temp3 = 0;
 	int j=0;
+	int** matrix = f1->matrix;
 
-	for(int i=0;i<size;i++){
+	for(int i=0;i<f1->size;i++){
 		temp = matrix[i][0];
 		matrix[i][0] = matrix[i][1];
 		matrix[i][1] = temp;
 	}
 	
-	for(int i=0;i<size-1;i++){
+	for(int i=0;i<f1->size-1;i++){
 		if(matrix[i+1][0] < matrix[i][0]){
 			j=i;
 			while(j>=0 && matrix[j+1][0] < matrix[j][0]){
@@ -307,71 +316,12 @@ void transposeMatrix(int** matrix, int size){
 				j--;					
 			}
 		}
-	}	
-}
-
-/*
-void coordMatrixMultiply(int** matrix1, int size1,int rows1, int** matrix2, int size2){
-	
-	int rowVal = 0;
-	int colVal = 0;
-	int i=0;
-	int k=0;
-	int min = 0;
-	int max = 0;
-	int* index = malloc(sizeof(int)*rows1);
-	int indexSize=0;
-	int firstIt = 0;
-	int val = 0;
-	int found = 0;
-	int finalVal = 0;
-	int matrix2Col =0;
-	//highly unlikely matrix will created a bigger one, so just use biggest size.
-	int bigger = size1 > size2? size1 : size2;
-	int** newMatrix = malloc(sizeof(int*)*bigger;
-	
-	
-	//need to increment rowVal, also newMatrixCol, need to somehow create an array for new values.
-	
-	while(i<size1 && matrix1[i][0] == rowVal){
-		colVal = matrix1[i][1];
-		val = matrix[i][2];
-		found = 0;
-		if(firstIt ==0){
-			for(int j=0;j<size2;j++){
-				if(matrix[j][1] == rowVal){
-					index[indexSize] = j;
-					indexSize++;
-					if(matrix2[j][0] == colVal){
-						val*= matrix2[j][2];
-						found = 1;
-					}
-				}
-			}
-			if(found ==0){
-				val = 0;
-			}
-			firstIt = 1;
-		}
-		else{
-			k = 0;
-			while(k<indexSize && matrix2[index[k]][0] <= colVal && found ==0){
-				if(matrix2[index[k]][0] == colVal){
-					val *= matrix2[index[k]][2];
-					found = 1;
-				}
-				k++;
-			}
-			if(found ==0){
-				val = 0;
-			}
-		}
-		finalVal += val;		
-		i++;
 	}
-	
-	
-} */
+
+	temp = f1->rows;
+	f1->rows = f1->cols;
+	f1->cols = temp;
+}
  
 //I think this works as a very inefficient bare bones.
 // can be improved that it doesnt record the start and end point for the
@@ -379,28 +329,28 @@ void coordMatrixMultiply(int** matrix1, int size1,int rows1, int** matrix2, int 
 // if it has to traverse a second time, but need to get cracking on 
 //parallel shite, so get this working, get everything working to spec
 // do parallel and then tweak functions.
-int** coordMatrixMultiply(int** matrix1, int size1, int rows1, int cols1, int** matrix2, int size2, int rows2, int cols2, int* mSize3){
-	//needs debugging
-	if(cols1 != rows2){
+void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
+	if(f1->cols != f1->rows){
 		printf("Colums of Matrix 1 and rows of Matrix 2 must be equal\n");
 		exit(0);
 	}
 	
 	int c1=0, c2=0, c3=0, val=0, totVal=0;
-	int size3 = size1 > size2 ? size1:size2;
+	int size3 = f1->size > f2->size ? f1->size:f2->size;
 	size3 *= 2;
+	int** matrix1 = f1->matrix;
+	int** matrix2 = f2->matrix;
 	int** matrix3 = malloc(sizeof(int*)*size3);
-	for(int i=0; i<rows1; i++){
-		printf("%d\n",i);
-		for(int j=0; j<cols2; j++){
+	for(int i=0; i<f1->rows; i++){
+		for(int j=0; j<f2->cols; j++){
 			c1=0;
 			totVal=0;
-			while(c1 < size1 && matrix1[c1][0] <= i){
+			while(c1 < f1->size && matrix1[c1][0] <= i){
 				c2 = 0;
-				while(c2<size2){
+				while(c2<f2->size){
 					if(matrix1[c1][0] == i && matrix2[c2][1] == j && matrix1[c1][1] == matrix2[c2][0]){
 						val = matrix1[c1][2] * matrix2[c2][2];
-						c2=size2;
+						c2=f2->size;
 						totVal += val;
 					}
 					c2++;
@@ -422,8 +372,10 @@ int** coordMatrixMultiply(int** matrix1, int size1, int rows1, int cols1, int** 
 			}
 		}
 	}
-	*mSize3 = c3;
-	return matrix3;
+	f3->size = c3;
+	f3-> matrix = matrix3;
+	f3->rows = f1->rows;
+	f3->cols = f2->cols;
 }
 
 

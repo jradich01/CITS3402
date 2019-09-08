@@ -1,14 +1,13 @@
 
-int** makeCoordMatrix(struct FileInfo* fInfo);
 void displayCoordMatrix(int** matrix, int size);
 int** makeCSRMatrix(struct FileInfo* fInfo);
 void displayCSRMatrix(int** matrix,struct FileInfo* fInfo);
-void intScalarMultiply(int** matrix,int size, int scalar);
-void printDenseCoordMatrix(int** matrix, int size, int rows, int cols);
-int intTraceCoordCalc(int** matrix,struct FileInfo* fInfo);
-int intTraceCSRCalc(int** matrix, struct FileInfo* fInfo);
+int intTraceCSRCalc(struct FileInfo* fInfo);
 void printDenseCSRMatrix(int** matrix, struct FileInfo* fInfo);
-int** coordMatrixAddition(int** matrix1, int size1, int** matrix2, int size2, int* matrix3Size);
-void transposeMatrix(int** matrix, int size);
-int** coordMatrixMultiply(int** matrix1, int size1, int rows1, int cols1, int** matrix2, int size2, int rows2, int cols2, int* mSize3);
-
+void makeCoordMatrix(struct FileInfo* fInfo);
+void intScalarMultiply(struct FileInfo* f1, int scalar);
+int intTraceCoordCalc(struct FileInfo* fInfo);
+void transposeMatrix(struct FileInfo* fInfo);
+void coordMatrixAddition(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3);
+void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3);
+void printDenseCoordMatrix(struct FileInfo* f1, FILE* file);

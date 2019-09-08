@@ -1,10 +1,15 @@
 mm
 matrix3.in
 matrix3.in
-4
+1
 int
 5
 5
 
 File processing time: 0.000000
-Trace: 32
+Calculation processing time: 0.000000
+1 0 0 0 0 
+1 1 0 0 2 
+1 2 1 0 3 
+1 1 0 0 2 
+2 0 0 0 1 

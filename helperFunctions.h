@@ -1,6 +1,6 @@
 
-int processCommands(int argc, char** argv, struct ReportData* r1);
+void processCommands(int argc, char** argv, struct ReportData* r1);
 int arraySearch(char* cmd, char** arr, int size);
-void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct ReportData* r1);
+void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3, struct ReportData* r1);
 int getArraySize(FILE* file);
-void initialiseFileInfo(struct FileInfo* fInfo, char* fileName, int threads);
+void initialiseFileInfo(struct FileInfo* fInfo, char* fileName);
