@@ -388,29 +388,27 @@ int** coordMatrixMultiply(int** matrix1, int size1, int rows1, int cols1, int** 
 	
 	int c1=0, c2=0, c3=0, val=0, totVal=0;
 	int size3 = size1 > size2 ? size1:size2;
+	size3 *= 2;
 	int** matrix3 = malloc(sizeof(int*)*size3);
 	for(int i=0; i<rows1; i++){
-		printf("Here 1\n");
+		printf("%d\n",i);
 		for(int j=0; j<cols2; j++){
-			printf("here 2\n");
 			c1=0;
 			totVal=0;
-			while(matrix1[c1][0] == i){
-				printf("here 3\n");
+			while(c1 < size1 && matrix1[c1][0] <= i){
+				c2 = 0;
 				while(c2<size2){
-					printf("here 4\n");
-					c2=0;
-					if(matrix1[c1][0] == matrix2[c2][1] && matrix1[c1][1] == matrix2[c2][0]){
+					if(matrix1[c1][0] == i && matrix2[c2][1] == j && matrix1[c1][1] == matrix2[c2][0]){
 						val = matrix1[c1][2] * matrix2[c2][2];
 						c2=size2;
+						totVal += val;
 					}
+					c2++;
 				}
-				totVal += val;
 				c1++;
 			}
 			
 			if(totVal > 0){
-				printf("Val %d\n",totVal);
 				if(c3 > size3){
 					printf("Soz, not enoguh room!!\n");
 					exit(0);
@@ -424,7 +422,7 @@ int** coordMatrixMultiply(int** matrix1, int size1, int rows1, int cols1, int** 
 			}
 		}
 	}
-	mSize3 = &c3;
+	*mSize3 = c3;
 	return matrix3;
 }
 

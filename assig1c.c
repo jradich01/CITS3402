@@ -67,6 +67,7 @@ int main(int argc, char** argv){
 			intMatrix = makeCoordMatrix(&f1);
 			intMatrix2 = makeCoordMatrix(&f2);
 			intMatrix3 = coordMatrixMultiply(intMatrix,f1.size,f1.rows,f1.cols,intMatrix2,f2.size,f2.rows,f2.cols,&matrix3Size);
+			displayCoordMatrix(intMatrix3,matrix3Size);
 			printDenseCoordMatrix(intMatrix3,matrix3Size,f1.rows,f2.cols);
 			break;
 		default:

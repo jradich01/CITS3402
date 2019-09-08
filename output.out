@@ -1,10 +1,10 @@
 mm
-matrix4.in
-matrix4.in
+matrix3.in
+matrix3.in
 4
 int
-3
-3
+5
+5
 
 File processing time: 0.000000
-Trace: 0
+Trace: 32
