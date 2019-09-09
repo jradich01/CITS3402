@@ -127,7 +127,7 @@ void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* 
 }	
 
 int getArraySize(FILE* file){
-	char val[5];
+	char val[10];
 	int count =0;
 	while(!feof(file)){
 		fscanf(file,"%s",val);
@@ -152,5 +152,25 @@ void initialiseFileInfo(struct FileInfo* fInfo, char* fileName){
 	fInfo->size = getArraySize(fInfo->file);
 	fseek(fInfo->file,loc,SEEK_SET);
 	
+}
+
+void memoryCleanup(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
+	fclose(f1->file);
+	closeMatrix((void*)f1->matrix,f1->size);
 	
+	if(f2->matrix != NULL){
+		fclose(f2->file);
+		closeMatrix((void*)f2->matrix,f2->size);
+	}
+	if(f3->matrix != NULL){
+		closeMatrix((void*)f3->matrix,f3->size);
+	}
+	
+}
+
+void closeMatrix(void** matrix, int size){
+	for(int i=0;i<size;i++){
+		free(matrix[i]);
+	}
+	free(matrix);
 }

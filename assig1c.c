@@ -28,6 +28,10 @@ int main(int argc, char** argv){
 		initialiseFileInfo(&f2,r1.fileName2);
 		makeCoordMatrix(&f2);
 	}
+	else{
+		f2.matrix = NULL;
+		f3.matrix = NULL;
+	}
 	fileProcEnd = clock();
 	calcProcBegin = clock();
 	
@@ -57,9 +61,11 @@ int main(int argc, char** argv){
 	r1.fileProcTimeTaken = (double)(fileProcEnd-fileProcBegin)/CLOCKS_PER_SEC;
 	r1.calcProcTimeTaken = (double)(calcProcEnd-calcProcBegin)/CLOCKS_PER_SEC;
 	printOutputFile(&f1,&f2, &f3,&r1);
-	fclose(f1.file);
+	memoryCleanup(&f1,&f2,&f3);
+
 	return 0;
 }
+
 
 
 
