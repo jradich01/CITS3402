@@ -1,14 +1,14 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include"matrixStructures.h"
-#include"intFunctions.h"
+#include"floatFunctions.h"
 
-void makeCoordMatrix(struct FileInfo* fInfo){
+void makeCoordMatrixF(struct FileInfo* fInfo){
 	int arrSize = fInfo->size;
-	int** coordMatrix = malloc(sizeof(int*)*arrSize);
+	float** coordMatrix = malloc(sizeof(float*)*arrSize);
 	int row = 0;
 	int col = 0;
-	int val = 0;
+	float val = 0;
 	int totCount = 1;
 	
 	for(int i=0;i<arrSize;i++){
@@ -17,12 +17,12 @@ void makeCoordMatrix(struct FileInfo* fInfo){
 			printf("Not enough numbers provided\n");
 			exit(0);
 		}
-		fscanf(fInfo->file,"%d\n",&val);
+		fscanf(fInfo->file,"%f\n",&val);
 		if(val ==0){
 			i--;
 		}
 		else{
-			coordMatrix[i] = (int*)malloc(sizeof(int)*3);
+			coordMatrix[i] = (float*)malloc(sizeof(float)*3);
 			row = totCount / fInfo->cols;
 			col = totCount % fInfo->cols;
 			if(col ==0){
@@ -37,17 +37,17 @@ void makeCoordMatrix(struct FileInfo* fInfo){
 		}
 		totCount++;
 	}
-	fInfo->matrix = coordMatrix;
+	fInfo->matrixF = coordMatrix;
 	
 }
 
-void displayCoordMatrix(struct FileInfo* f1){
+void displayCoordMatrixF(struct FileInfo* f1){
 	for(int i=0;i<f1->size;i++){
-		printf("Row: %d  Col: %d Value: %d\n",f1->matrix[i][0],f1->matrix[i][1],f1->matrix[i][2]);
+		printf("Row: %d  Col: %d Value: %f\n",f1->matrixF[i][0],f1->matrixF[i][1],f1->matrixF[i][2]);
 	}
 }
 
-void makeCSRMatrix(struct FileInfo* fInfo){
+void makeCSRMatrixF(struct FileInfo* fInfo){
 	int size = fInfo->size;
 	int rows = fInfo->rows;
 	int cols = fInfo->cols;
@@ -93,31 +93,33 @@ void makeCSRMatrix(struct FileInfo* fInfo){
 	fInfo->matrix= CSRMatrix;
 }
 
-void scalarMultiply(struct FileInfo* f1, int scalar){
+void scalarMultiplyF(struct FileInfo* f1, float scalarF){
 	for(int i=0; i<f1->size; i++){
-		f1->matrix[i][2] *= scalar;
+		//printf("%f\n",f1->matrixF[i][2]);
+		f1->matrixF[i][2] *= scalarF;
+		//printf("%f\n",f1->matrixF[i][2]);
 	}
 }
 
-void printDenseCoordMatrix(struct FileInfo* f1, FILE* file){
+void printDenseCoordMatrixF(struct FileInfo* f1, FILE* file){
 	int matrixCounter =0;
-	int val = 0;
+	float val = 0;
 	for(int i=0; i<f1->rows; i++){
 		for(int j=0; j<f1->cols; j++){
 			val = 0;
 			if(matrixCounter<f1->size){
-				if(f1->matrix[matrixCounter][0]==i && f1->matrix[matrixCounter][1]==j){
-					val = f1->matrix[matrixCounter][2]; 
+				if(f1->matrixF[matrixCounter][0]==i && f1->matrixF[matrixCounter][1]==j){
+					val = f1->matrixF[matrixCounter][2]; 
 					matrixCounter++;
 				}
 			}
-			fprintf(file,"%d ",val);
+			fprintf(file,"%f ",val);
 		}
 		fprintf(file,"\n");
 	}
 }
 
-int traceCoordCalc(struct FileInfo* fInfo){
+int traceCoordCalcF(struct FileInfo* fInfo){
 	int size = fInfo->size;
 	int rows = fInfo->rows;
 	int cols = fInfo->cols;
@@ -141,7 +143,7 @@ int traceCoordCalc(struct FileInfo* fInfo){
 	return tot;
 }
 
-int traceCSRCalc(struct FileInfo* fInfo){
+int traceCSRCalcF(struct FileInfo* fInfo){
 	int size = fInfo->size;
 	int rows = fInfo->rows;
 	int cols = fInfo->cols;
@@ -173,7 +175,7 @@ int traceCSRCalc(struct FileInfo* fInfo){
 	return tot;
 }
 
-void printDenseCSRMatrix(struct FileInfo* fInfo, FILE* f){
+void printDenseCSRMatrixF(struct FileInfo* fInfo, FILE* f){
 	int size = fInfo->size;
 	int rows = fInfo->rows;
 	int cols = fInfo->cols;	
@@ -199,7 +201,7 @@ void printDenseCSRMatrix(struct FileInfo* fInfo, FILE* f){
 	}
 }
 
-void coordMatrixAddition(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
+void coordMatrixAdditionF(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
 	
 	if(f1->rows != f2->rows || f1->cols != f2->cols){
 		printf("Matrix dimensions must be the same\n");
@@ -260,7 +262,7 @@ void coordMatrixAddition(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 	f3->size = size3;
 }
 
-void transposeMatrix(struct FileInfo* f1){
+void transposeMatrixF(struct FileInfo* f1){
 	int temp = 0;
 	int temp2 = 0;
 	int temp3 = 0;
@@ -306,7 +308,7 @@ void transposeMatrix(struct FileInfo* f1){
 // if it has to traverse a second time, but need to get cracking on 
 //parallel shite, so get this working, get everything working to spec
 // do parallel and then tweak functions.
-void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
+void coordMatrixMultiplyF(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
 	if(f1->cols != f1->rows){
 		printf("Colums of Matrix 1 and rows of Matrix 2 must be equal\n");
 		exit(0);

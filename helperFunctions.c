@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "matrixStructures.h"
 #include "helperFunctions.h"
 #include "intFunctions.h"
+#include "floatFunctions.h"
 
 int arraySearch(char* cmd, char** arr, int size){
 	int cell = -1;
@@ -40,6 +42,7 @@ void processCommands(int argc, char** argv, struct ReportData* r1){
 		}
 		command = 1;
 		r1->scalarVal = scalarVal;
+		r1->scalarValF= (float)scalarVal;
 		r1->cmd = "sc";
 	}
 	else if((cell = arraySearch("-tr",argv,argc)) >-1){
@@ -96,9 +99,38 @@ void processCommands(int argc, char** argv, struct ReportData* r1){
 
 void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3, struct ReportData* r1){
 	
+	time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
+	char* studentID = "22744833";
+	char fileName[128];
+	char dateTime[32];
+	char* delim1="0";
+	char* delim2="0";
+	char* delim3="0";
+	char* delim4="0";
+	
+	if(tm.tm_mday >= 10){
+		delim1="";
+	}
+	if(tm.tm_mon >= 10){
+		delim2="";
+	}
+	if(tm.tm_hour >=10){
+		delim3="";
+	}
+	if(tm.tm_min >=10){
+		delim4="";
+	}
+
+	snprintf(dateTime,sizeof(dateTime),"_%s%d%s%d%d_%s%d%s%d_",delim1,tm.tm_mday,delim2,tm.tm_mon+1,tm.tm_year + 1900,delim3, tm.tm_hour,delim4, tm.tm_min);	
+	strcpy(fileName,studentID);
+	strcat(fileName,dateTime);
+	strcat(fileName,r1->cmd);
+	strcat(fileName,".out");
+	
 	r1->threads = 1;  //update when multi threading
 	
-	FILE* outFile = fopen("output.out","w");
+	FILE* outFile = fopen(fileName,"w");
 	if(outFile == NULL){
 		printf("Could not create output file");
 		exit(1);

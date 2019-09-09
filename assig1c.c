@@ -4,7 +4,7 @@
 #include<time.h>
 #include "matrixStructures.h"
 #include "intFunctions.h"
-#include "doubleFunctions.h"
+#include "floatFunctions.h"
 #include "helperFunctions.h"
 
 int main(int argc, char** argv){
@@ -37,10 +37,10 @@ int main(int argc, char** argv){
 	
 	switch(r1.command){
 		case 1: //scalar
-			intScalarMultiply(&f1,r1.scalarVal);
+			scalarMultiply(&f1,r1.scalarVal);
 			break;
 		case 2: //trace - csr also available
-			r1.trace = intTraceCoordCalc(&f1);
+			r1.trace = traceCoordCalc(&f1);
 			break;
 		case 3: //transpose
 			transposeMatrix(&f1);

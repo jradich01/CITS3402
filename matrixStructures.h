@@ -4,6 +4,7 @@ struct FileInfo{
 	int rows,cols,size;
 	char dataType[6];
 	int** matrix;
+	float** matrixF;
 };
 
 struct ReportData{
@@ -15,6 +16,8 @@ struct ReportData{
 	double fileProcTimeTaken;
 	double calcProcTimeTaken;
 	int scalarVal;
+	float scalarValF;
 	int trace;
+	float traceF;
 	int threads;
 };
