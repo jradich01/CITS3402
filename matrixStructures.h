@@ -4,7 +4,8 @@ struct FileInfo{
 	int rows,cols,size;
 	char dataType[6];
 	int** matrix;
-	float** matrixF;
+	int* valMatrix;
+	float* valMatrixF;
 };
 
 struct ReportData{

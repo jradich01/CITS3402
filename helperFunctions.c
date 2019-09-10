@@ -5,7 +5,7 @@
 #include "matrixStructures.h"
 #include "helperFunctions.h"
 #include "intFunctions.h"
-#include "floatFunctions.h"
+//#include "floatFunctions.h"
 
 int arraySearch(char* cmd, char** arr, int size){
 	int cell = -1;

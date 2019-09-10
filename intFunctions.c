@@ -3,9 +3,11 @@
 #include"matrixStructures.h"
 #include"intFunctions.h"
 
+//done
 void makeCoordMatrix(struct FileInfo* fInfo){
 	int arrSize = fInfo->size;
 	int** coordMatrix = malloc(sizeof(int*)*arrSize);
+	int* valMatrix = malloc(sizeof(int)*arrSize);
 	int row = 0;
 	int col = 0;
 	int val = 0;
@@ -33,20 +35,23 @@ void makeCoordMatrix(struct FileInfo* fInfo){
 			}
 			coordMatrix[i][0] = row-1;
 			coordMatrix[i][1] = col-1;
-			coordMatrix[i][2] = val;
+			valMatrix[i] = val;
 		}
 		totCount++;
 	}
 	fInfo->matrix = coordMatrix;
+	fInfo->valMatrix = valMatrix;
 	
 }
 
+/*
 void displayCoordMatrix(struct FileInfo* f1){
 	for(int i=0;i<f1->size;i++){
 		printf("Row: %d  Col: %d Value: %d\n",f1->matrix[i][0],f1->matrix[i][1],f1->matrix[i][2]);
 	}
-}
+}*/
 
+//done
 void makeCSRMatrix(struct FileInfo* fInfo){
 	int size = fInfo->size;
 	int rows = fInfo->rows;
@@ -56,10 +61,13 @@ void makeCSRMatrix(struct FileInfo* fInfo){
 	int j = 0;
 	int rowCount = 0;
 	int totCount = 1;
-	int** CSRMatrix = malloc(sizeof(int*)*3);
+	int* valMatrix = malloc(sizeof(int)*size);
+	int** CSRMatrix = malloc(sizeof(int*)*2);
 	CSRMatrix[0] = (int*)malloc(sizeof(int)*size);
 	CSRMatrix[1] = (int*)malloc(sizeof(int)*(rows+1));
-	CSRMatrix[2] = (int*)malloc(sizeof(int)*size);
+	//CSRMatrix[2] = (int*)malloc(sizeof(int)*size);
+	
+		//---------up to here!!!-------------
 	CSRMatrix[1][0] = 0; j++;
 	for(int i=0;i<size;i++){
 		if(feof(fInfo->file)){
@@ -75,8 +83,10 @@ void makeCSRMatrix(struct FileInfo* fInfo){
 			i--;
 		}
 		else{
-			CSRMatrix[0][i] = val;
-			CSRMatrix[2][i] = col -1;
+			valMatrix[i] = val;
+			CSRMatrix[0][i] = col - 1;
+			//CSRMatrix[0][i] = val;
+			//CSRMatrix[2][i] = col -1;
 			rowCount++;
 		}
 		if(col == cols){
@@ -91,14 +101,16 @@ void makeCSRMatrix(struct FileInfo* fInfo){
 	}
 	
 	fInfo->matrix= CSRMatrix;
-}
+} 
 
+//done
 void scalarMultiply(struct FileInfo* f1, int scalar){
 	for(int i=0; i<f1->size; i++){
-		f1->matrix[i][2] *= scalar;
+		f1->valMatrix[i] *= scalar;
 	}
 }
 
+//done
 void printDenseCoordMatrix(struct FileInfo* f1, FILE* file){
 	int matrixCounter =0;
 	int val = 0;
@@ -107,7 +119,7 @@ void printDenseCoordMatrix(struct FileInfo* f1, FILE* file){
 			val = 0;
 			if(matrixCounter<f1->size){
 				if(f1->matrix[matrixCounter][0]==i && f1->matrix[matrixCounter][1]==j){
-					val = f1->matrix[matrixCounter][2]; 
+					val = f1->valMatrix[matrixCounter]; 
 					matrixCounter++;
 				}
 			}
@@ -116,7 +128,7 @@ void printDenseCoordMatrix(struct FileInfo* f1, FILE* file){
 		fprintf(file,"\n");
 	}
 }
-
+//done
 int traceCoordCalc(struct FileInfo* fInfo){
 	int size = fInfo->size;
 	int rows = fInfo->rows;
@@ -132,7 +144,7 @@ int traceCoordCalc(struct FileInfo* fInfo){
 		for(int i=0;i<rows;i++){
 			while(m < size && (matrix[m][0] <= i || matrix[m][1] <= i) ){
 				if(matrix[m][0] == i && matrix[m][1] == i){
-					tot+= matrix[m][2];
+					tot+= valMatrix[m];
 				}
 				m++;
 			}

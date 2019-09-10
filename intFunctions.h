@@ -1,5 +1,5 @@
 
-void displayCoordMatrix(struct FileInfo* f1);
+//void displayCoordMatrix(struct FileInfo* f1);
 void makeCSRMatrix(struct FileInfo* fInfo);
 int traceCSRCalc(struct FileInfo* fInfo);
 void printDenseCSRMatrix(struct FileInfo* fInfo, FILE* f);

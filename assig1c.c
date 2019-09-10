@@ -4,7 +4,7 @@
 #include<time.h>
 #include "matrixStructures.h"
 #include "intFunctions.h"
-#include "floatFunctions.h"
+//#include "floatFunctions.h"
 #include "helperFunctions.h"
 
 int main(int argc, char** argv){
