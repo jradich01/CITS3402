@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv){
 	
-	const int NUMS = 5000;
+	const int NUMS = 4000000;
 	int num = 0;
 	FILE* file;
 	srand(time(0));

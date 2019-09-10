@@ -60,6 +60,7 @@ int main(int argc, char** argv){
 	
 	r1.fileProcTimeTaken = (double)(fileProcEnd-fileProcBegin)/CLOCKS_PER_SEC;
 	r1.calcProcTimeTaken = (double)(calcProcEnd-calcProcBegin)/CLOCKS_PER_SEC;
+	//printf("size: %d\n",f3.size);
 	printOutputFile(&f1,&f2, &f3,&r1);
 	memoryCleanup(&f1,&f2,&f3);
 

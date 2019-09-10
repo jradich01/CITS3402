@@ -189,13 +189,16 @@ void initialiseFileInfo(struct FileInfo* fInfo, char* fileName){
 void memoryCleanup(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
 	fclose(f1->file);
 	closeMatrix((void*)f1->matrix,f1->size);
+	free(f1->valMatrix);
 	
 	if(f2->matrix != NULL){
 		fclose(f2->file);
 		closeMatrix((void*)f2->matrix,f2->size);
+		free(f2->valMatrix);
 	}
 	if(f3->matrix != NULL){
 		closeMatrix((void*)f3->matrix,f3->size);
+		free(f3->valMatrix);
 	}
 	
 }

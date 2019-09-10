@@ -144,7 +144,7 @@ int traceCoordCalc(struct FileInfo* fInfo){
 		for(int i=0;i<rows;i++){
 			while(m < size && (matrix[m][0] <= i || matrix[m][1] <= i) ){
 				if(matrix[m][0] == i && matrix[m][1] == i){
-					tot+= valMatrix[m];
+					tot+= fInfo->valMatrix[m];
 				}
 				m++;
 			}
@@ -153,11 +153,13 @@ int traceCoordCalc(struct FileInfo* fInfo){
 	return tot;
 }
 
+//done
 int traceCSRCalc(struct FileInfo* fInfo){
 	int size = fInfo->size;
 	int rows = fInfo->rows;
 	int cols = fInfo->cols;
 	int** matrix = fInfo->matrix;
+	//int* valMatrix = fInfo->valMatrix;
 	int val = 0;
 	int j = 0;
 	int count = 0;
@@ -173,7 +175,8 @@ int traceCSRCalc(struct FileInfo* fInfo){
 				count = 0;
 				while(count < val && matrix[2][j + count] <= i ){
 					if(matrix[2][j + count] == i){
-						tot+= matrix[0][j + count];
+						tot += fInfo->valMatrix[j+count];
+						//tot+= matrix[0][j + count];
 						count = val; 
 					}
 					count++;
@@ -185,6 +188,7 @@ int traceCSRCalc(struct FileInfo* fInfo){
 	return tot;
 }
 
+//done
 void printDenseCSRMatrix(struct FileInfo* fInfo, FILE* f){
 	int size = fInfo->size;
 	int rows = fInfo->rows;
@@ -201,7 +205,8 @@ void printDenseCSRMatrix(struct FileInfo* fInfo, FILE* f){
 		for(int i=0;i<cols;i++){
 			val = 0;
 			if(count < numInRow && matrix[2][totCount + count] == i){
-				val = matrix[0][totCount + count];
+				//val = matrix[0][totCount + count];
+				fInfo->valMatrix[totCount+count];
 				count++;
 			}
 			fprintf(f,"%d ",val);
@@ -211,6 +216,7 @@ void printDenseCSRMatrix(struct FileInfo* fInfo, FILE* f){
 	}
 }
 
+//done
 void coordMatrixAddition(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
 	
 	if(f1->rows != f2->rows || f1->cols != f2->cols){
@@ -221,6 +227,7 @@ void coordMatrixAddition(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 	int size2 = f2->size;
 	
 	int** matrix3 = malloc(sizeof(int*)*(size1+size2));  //might be oversize but will fit worst case scenario
+	int* valMatrix3 = malloc(sizeof(int)*(size1+size2));
 	int val = 0;
 	int size3 = 0;
 	int s1Count=0;
@@ -234,41 +241,44 @@ void coordMatrixAddition(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 		if(matrix1[s1Count][0] < matrix2[s2Count][0]){
 			nextRow = matrix1[s1Count][0];
 			nextCol = matrix1[s1Count][1];
-			val = matrix1[s1Count][2];
+			val = f1->valMatrix[s1Count];
 			s1Count++;
 		}		
 		else if(matrix1[s1Count][0] > matrix2[s2Count][0]){
 			nextRow = matrix2[s2Count][0];
 			nextCol = matrix2[s2Count][1];
-			val = matrix2[s2Count][2];
+			val = f2->valMatrix[s2Count];
 			s2Count++;
 		}	
 		else{
 			nextRow = matrix1[s1Count][0];
 			if(matrix1[s1Count][1] < matrix2[s2Count][1]){
 				nextCol = matrix1[s1Count][1];
-				val = matrix1[s1Count][2];
+				val = f1->valMatrix[s1Count];
 				s1Count++;
 			}
 			else if(matrix1[s1Count][1] > matrix2[s2Count][1]){
 				nextCol = matrix2[s2Count][1];
-				val = matrix2[s2Count][2];
+				val = f2->valMatrix[s2Count];
 				s2Count++;
 			}
 			else{
 				nextCol = matrix1[s1Count][1];
-				val = matrix1[s1Count][2] + matrix2[s2Count][2];
+				val = f1->valMatrix[s1Count] + f2->valMatrix[s2Count];
 				s1Count++;
 				s2Count++;
 			}
 		}
-		matrix3[size3] = (int*)malloc(sizeof(int)*3);
+		matrix3[size3] = (int*)malloc(sizeof(int)*2);
 		matrix3[size3][0] = nextRow;
 		matrix3[size3][1] = nextCol;
-		matrix3[size3][2] = val;
+		valMatrix3[size3] = val;
 		size3++;
 	}
+	f3->cols = f1->cols;
+	f3->rows = f1->rows;
 	f3->matrix = matrix3;
+	f3->valMatrix = valMatrix3;
 	f3->size = size3;
 }
 
@@ -298,9 +308,9 @@ void transposeMatrix(struct FileInfo* f1){
 				matrix[j+1][1] = matrix[j][1];
 				matrix[j][1] = temp2;
 
-				temp3 = matrix[j+1][2];
-				matrix[j+1][2] = matrix[j][2];
-				matrix[j][2] = temp3;
+				temp3 = f1->valMatrix[j+1];
+				f1->valMatrix[j+1] = f1->valMatrix[j];
+				f1->valMatrix[j] = temp3;
 				
 				j--;					
 			}
@@ -330,6 +340,8 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 	int** matrix1 = f1->matrix;
 	int** matrix2 = f2->matrix;
 	int** matrix3 = malloc(sizeof(int*)*size3);
+	int* valMatrix3 = malloc(sizeof(int)*size3);
+
 	for(int i=0; i<f1->rows; i++){
 		for(int j=0; j<f2->cols; j++){
 			c1=0;
@@ -338,7 +350,7 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 				c2 = 0;
 				while(c2<f2->size){
 					if(matrix1[c1][0] == i && matrix2[c2][1] == j && matrix1[c1][1] == matrix2[c2][0]){
-						val = matrix1[c1][2] * matrix2[c2][2];
+						val = f1->valMatrix[c1] * f2->valMatrix[c2];
 						c2=f2->size;
 						totVal += val;
 					}
@@ -353,16 +365,18 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 					exit(0);
 				}
 				
-				matrix3[c3] = (int*)malloc(sizeof(int)*3);
+				matrix3[c3] = (int*)malloc(sizeof(int)*2);
 				matrix3[c3][0] = i;
 				matrix3[c3][1] = j;
-				matrix3[c3][2] = totVal;
+				valMatrix3[c3] = totVal;
 				c3++;
 			}
 		}
+		printf("c1: %d\n",i);
 	}
 	f3->size = c3;
 	f3-> matrix = matrix3;
+	f3->valMatrix = valMatrix3;
 	f3->rows = f1->rows;
 	f3->cols = f2->cols;
 }
