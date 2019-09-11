@@ -4,16 +4,20 @@
 #include<time.h>
 #include "matrixStructures.h"
 #include "intFunctions.h"
-//#include "floatFunctions.h"
 #include "helperFunctions.h"
 
 int main(int argc, char** argv){
 	
+	//TODO some cleanup resturctuing
+	// commands change
+	// write repoort
+	// multi thread
+	// tweak mm
 	struct FileInfo f1;
 	struct FileInfo f2;
 	struct FileInfo f3;
 	struct ReportData r1;
-	clock_t fileProcBegin; // = clock();
+	clock_t fileProcBegin;
 	clock_t fileProcEnd;
 	clock_t calcProcBegin;
 	clock_t calcProcEnd;
@@ -60,7 +64,6 @@ int main(int argc, char** argv){
 	
 	r1.fileProcTimeTaken = (double)(fileProcEnd-fileProcBegin)/CLOCKS_PER_SEC;
 	r1.calcProcTimeTaken = (double)(calcProcEnd-calcProcBegin)/CLOCKS_PER_SEC;
-	//printf("size: %d\n",f3.size);
 	printOutputFile(&f1,&f2, &f3,&r1);
 	memoryCleanup(&f1,&f2,&f3);
 

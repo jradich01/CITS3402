@@ -5,7 +5,6 @@
 #include "matrixStructures.h"
 #include "helperFunctions.h"
 #include "intFunctions.h"
-//#include "floatFunctions.h"
 
 int arraySearch(char* cmd, char** arr, int size){
 	int cell = -1;
@@ -28,12 +27,12 @@ void processCommands(int argc, char** argv, struct ReportData* r1){
 		exit(0);
 	}
 	if((cell = arraySearch("-sc",argv,argc)) >-1){
-		int scalarVal = 0;
+		float scalarVal = 0;
 		if(argc < (cell + 2)){
 			printf("Missing scalar multiplier\n");
 			exit(0);
 		}
-		scalarVal = atoi(argv[cell+1]);
+		scalarVal = atof(argv[cell+1]);
 		if(scalarVal == 0){
 			if(strcmp("0",argv[cell+1])!=0){
 				printf("Could not convert scalar param to integer \n");
@@ -42,7 +41,6 @@ void processCommands(int argc, char** argv, struct ReportData* r1){
 		}
 		command = 1;
 		r1->scalarVal = scalarVal;
-		r1->scalarValF= (float)scalarVal;
 		r1->cmd = "sc";
 	}
 	else if((cell = arraySearch("-tr",argv,argc)) >-1){
@@ -151,7 +149,7 @@ void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* 
 			printDenseCoordMatrix(f3,outFile);
 		}
 		else{
-			fprintf(outFile,"Trace: %d\n",r1->trace);
+			fprintf(outFile,"Trace: %f\n",r1->trace);
 		}
 	}
 
@@ -179,6 +177,13 @@ void initialiseFileInfo(struct FileInfo* fInfo, char* fileName){
 		exit(0);
 	}
 	fscanf(fInfo->file,"%s %d %d",fInfo->dataType,&fInfo->rows,&fInfo->cols);
+	
+	if(strcmp(fInfo->dataType,"int")==0){
+		strcpy(fInfo->printToken,"%g");
+	}
+	else{
+		strcpy(fInfo->printToken,"%f");
+	}
 	
 	loc = ftell(fInfo->file);
 	fInfo->size = getArraySize(fInfo->file);
