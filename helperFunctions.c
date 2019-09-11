@@ -4,7 +4,7 @@
 #include <time.h>
 #include "matrixStructures.h"
 #include "helperFunctions.h"
-#include "intFunctions.h"
+#include "coordFunctions.h"
 
 int arraySearch(char* cmd, char** arr, int size){
 	int cell = -1;
@@ -26,7 +26,7 @@ void processCommands(int argc, char** argv, struct ReportData* r1){
 		printf("Not enough parameters 1\n");
 		exit(0);
 	}
-	if((cell = arraySearch("-sc",argv,argc)) >-1){
+	if((cell = arraySearch("--sc",argv,argc)) >-1){
 		float scalarVal = 0;
 		if(argc < (cell + 2)){
 			printf("Missing scalar multiplier\n");
@@ -43,22 +43,22 @@ void processCommands(int argc, char** argv, struct ReportData* r1){
 		r1->scalarVal = scalarVal;
 		r1->cmd = "sc";
 	}
-	else if((cell = arraySearch("-tr",argv,argc)) >-1){
+	else if((cell = arraySearch("--tr",argv,argc)) >-1){
 		command = 2;
 		filesReq = 1;
 		r1->cmd = "tr";
 	}
-	else if((cell = arraySearch("-ts",argv,argc))>-1){
+	else if((cell = arraySearch("--ts",argv,argc))>-1){
 		command = 3;
 		filesReq = 1;
 		r1->cmd = "ts";
 	}
-	else if((cell = arraySearch("-ad",argv,argc))>-1){
+	else if((cell = arraySearch("--ad",argv,argc))>-1){
 		command = 4;
 		filesReq = 2;
 		r1->cmd = "ad";
 	}
-	else if((cell = arraySearch("-mm",argv,argc))>-1){
+	else if((cell = arraySearch("--mm",argv,argc))>-1){
 		command = 5;
 		filesReq = 2;
 		r1->cmd = "mm";

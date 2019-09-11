@@ -3,13 +3,12 @@
 #include<string.h>
 #include<time.h>
 #include "matrixStructures.h"
-#include "intFunctions.h"
+#include "coordFunctions.h"
 #include "helperFunctions.h"
 
 int main(int argc, char** argv){
 	
 	//TODO some cleanup resturctuing
-	// commands change
 	// write repoort
 	// multi thread
 	// tweak mm
