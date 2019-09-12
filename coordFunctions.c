@@ -265,9 +265,8 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 		exit(0);
 	}
 	
-	int c1=0, c2=0, c3=0;
+	int c1=0, c2=0, c3=0, startPoint = 0;
 	float val = 0, totVal = 0;
-	printf("%d %d\n",f1->rows,f2->cols);
 	int size3 = f1->rows * f2->cols;  //worst case may result in full matrix.
 	
 	//int size3 = 1000;
@@ -287,13 +286,11 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 	f3->valMatrix = valMatrix3;
 	strcpy(f3->printToken,f1->printToken);
 
-	
-
 	for(int i=0; i<f1->rows; i++){
-		
+		startPoint = c1;
 		for(int j=0; j<f2->cols; j++){
 			
-			c1=0;
+			c1=startPoint;
 			totVal=0;
 			
 			for(int k = 0;k<f2->cols;k++){
@@ -324,7 +321,7 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 				c1++;
 			}
 			
-			if(totVal > 0){
+			if(totVal > 0){/*
 				if(c3 > size3){
 					FILE* fukt = fopen("error.out","w");
 					printf("Size1: %d  Size2 %d  Size3 %d\n",f1->size,f2->size,size3);
@@ -333,7 +330,7 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 					fclose(fukt);
 					printf("Soz, not enoguh room!!\n");
 					exit(0);
-				}
+				}*/
 				
 				matrix3[c3] = (int*)malloc(sizeof(int)*2);
 				matrix3[c3][0] = i;
@@ -342,12 +339,9 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 				c3++;
 			}
 		}
-		printf("Row:%d\n",i);
 	}
 	
 	f3->size = c3;
-	
-
 }
 
 
