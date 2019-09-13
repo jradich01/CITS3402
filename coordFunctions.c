@@ -203,61 +203,6 @@ void transposeMatrix(struct FileInfo* f1){
 	f1->rows = f1->cols;
 	f1->cols = temp;
 }
- 
- /*
-void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
-	if(f1->cols != f1->rows){
-		printf("Colums of Matrix 1 and rows of Matrix 2 must be equal\n");
-		exit(0);
-	}
-	
-	int c1=0, c2=0, c3=0;
-	float val = 0, totVal = 0;
-	int size3 = f1->size > f2->size ? f1->size:f2->size;
-	size3 *= 2;
-	int** matrix1 = f1->matrix;
-	int** matrix2 = f2->matrix;
-	int** matrix3 = malloc(sizeof(int*)*size3);
-	float* valMatrix3 = malloc(sizeof(int)*size3);
-
-	for(int i=0; i<f1->rows; i++){
-		for(int j=0; j<f2->cols; j++){
-			c1=0;
-			totVal=0;
-			while(c1 < f1->size && matrix1[c1][0] <= i){
-				c2 = 0;
-				while(c2<f2->size){
-					if(matrix1[c1][0] == i && matrix2[c2][1] == j && matrix1[c1][1] == matrix2[c2][0]){
-						val = f1->valMatrix[c1] * f2->valMatrix[c2];
-						c2=f2->size;
-						totVal += val;
-					}
-					c2++;
-				}
-				c1++;
-			}
-			
-			if(totVal > 0){
-				if(c3 > size3){
-					printf("Soz, not enoguh room!!\n");
-					exit(0);
-				}
-				
-				matrix3[c3] = (int*)malloc(sizeof(int)*2);
-				matrix3[c3][0] = i;
-				matrix3[c3][1] = j;
-				valMatrix3[c3] = totVal;
-				c3++;
-			}
-		}
-	}
-	f3->size = c3;
-	f3-> matrix = matrix3;
-	f3->valMatrix = valMatrix3;
-	f3->rows = f1->rows;
-	f3->cols = f2->cols;
-	strcpy(f3->printToken,f1->printToken);
-} */
 
 void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
 	if(f1->cols != f1->rows){
@@ -269,16 +214,11 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 	float val = 0, totVal = 0;
 	int size3 = f1->rows * f2->cols;  //worst case may result in full matrix.
 	
-	//int size3 = 1000;
-	//size3 *= 4;
-	
 	int** matrix1 = f1->matrix;
 	int** matrix2 = f2->matrix;
 	int** matrix3 = malloc(sizeof(int*)*size3);
 	float* valMatrix3 = malloc(sizeof(int)*size3);
-	
 	float reg[f2->cols];
-	
 	
 	f3->rows = f1->rows;
 	f3->cols = f2->cols;
@@ -304,16 +244,6 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 			}
 			
 			while(c1 < f1->size && matrix1[c1][0] <= i){
-				/*
-				c2 = 0;
-				while(c2<f2->size){
-					if(matrix1[c1][0] == i && matrix2[c2][1] == j && matrix1[c1][1] == matrix2[c2][0]){
-						val = f1->valMatrix[c1] * f2->valMatrix[c2];
-						c2=f2->size;
-						totVal += val;
-					}
-					c2++;
-				}*/
 				if(matrix1[c1][0] == i){
 					val = f1->valMatrix[c1] * reg[matrix1[c1][1]];
 					totVal += val;
@@ -321,17 +251,7 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 				c1++;
 			}
 			
-			if(totVal > 0){/*
-				if(c3 > size3){
-					FILE* fukt = fopen("error.out","w");
-					printf("Size1: %d  Size2 %d  Size3 %d\n",f1->size,f2->size,size3);
-					f3->size = c3;
-					printDenseCoordMatrix(f3,fukt);
-					fclose(fukt);
-					printf("Soz, not enoguh room!!\n");
-					exit(0);
-				}*/
-				
+			if(totVal > 0){			
 				matrix3[c3] = (int*)malloc(sizeof(int)*2);
 				matrix3[c3][0] = i;
 				matrix3[c3][1] = j;

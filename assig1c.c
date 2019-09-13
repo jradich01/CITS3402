@@ -11,7 +11,7 @@ int main(int argc, char** argv){
 	//TODO some cleanup resturctuing
 	// write repoort
 	// multi thread
-	// tweak mm
+	//comment code
 	struct FileInfo f1;
 	struct FileInfo f2;
 	struct FileInfo f3;

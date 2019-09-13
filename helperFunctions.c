@@ -157,14 +157,19 @@ void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* 
 }	
 
 int getArraySize(FILE* file){
-	char val[10];
+	//char val[10];
 	int count =0;
+	float val =0;
 	while(!feof(file)){
-		fscanf(file,"%s",val);
-		if(strcmp(val,"0") !=0 && strcmp(val,"0.0")!=0){
+		fscanf(file,"%f\n",&val);
+		//if(strcmp(val,"0") !=0 && strcmp(val,"0.0")!=0){
+		if(val!=0){
 			count++;
+			//printf("Yes: %f\n",val);
 		}
+		//printf("No: %f\n",val);
 	}
+	//printf("Count: %d\n",count);
 	return count;	
 }
 
