@@ -5,6 +5,7 @@
 #include "matrixStructures.h"
 #include "coordFunctions.h"
 #include "helperFunctions.h"
+#include "csrFunctions.h"
 
 int main(int argc, char** argv){
 	
@@ -26,7 +27,14 @@ int main(int argc, char** argv){
 	fileProcBegin = clock();
 	
 	initialiseFileInfo(&f1,r1.fileName1);
-	makeCoordMatrix(&f1);
+	
+	if(r1.command == 6){ // proof of concept and comparion for csr matrix
+		makeCSRMatrix(&f1);
+	}
+	else{
+		makeCoordMatrix(&f1);
+	}
+	
 	if(r1.fileName2 != NULL){
 		initialiseFileInfo(&f2,r1.fileName2);
 		makeCoordMatrix(&f2);
@@ -53,6 +61,9 @@ int main(int argc, char** argv){
 			break;
 		case 5: // multiply //r1xc1 r2xc2  c1 == r2.  creates a r1xc2 matrix
 			coordMatrixMultiply(&f1,&f2,&f3);
+			break;
+		case 6: 
+			r1.trace = traceCSRCalc(&f1);
 			break;
 		default:
 			printf("Unknown error\n");

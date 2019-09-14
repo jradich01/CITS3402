@@ -205,20 +205,21 @@ void transposeMatrix(struct FileInfo* f1){
 }
 
 void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
-	if(f1->cols != f1->rows){
-		printf("Colums of Matrix 1 and rows of Matrix 2 must be equal\n");
+	if(f1->cols != f2->rows){
+		printf("Columns of Matrix 1 and rows of Matrix 2 must be equal\n");
 		exit(0);
 	}
 	
 	int c1=0, c2=0, c3=0, startPoint = 0;
 	float val = 0, totVal = 0;
 	int size3 = f1->rows * f2->cols;  //worst case may result in full matrix.
-	
+	int regSize = f1->rows > f1->cols ? f1->rows : f1->cols;
 	int** matrix1 = f1->matrix;
 	int** matrix2 = f2->matrix;
 	int** matrix3 = malloc(sizeof(int*)*size3);
-	float* valMatrix3 = malloc(sizeof(int)*size3);
-	float reg[f2->cols];
+	float* valMatrix3 = malloc(sizeof(float)*size3);
+	float reg[regSize];
+	
 	
 	f3->rows = f1->rows;
 	f3->cols = f2->cols;
@@ -233,7 +234,7 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 			c1=startPoint;
 			totVal=0;
 			
-			for(int k = 0;k<f2->cols;k++){
+			for(int k = 0;k<regSize;k++){
 				reg[k]=0;
 			}
 
@@ -251,12 +252,15 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 				c1++;
 			}
 			
-			if(totVal > 0){			
+			
+			if(totVal > 0){		
+				
 				matrix3[c3] = (int*)malloc(sizeof(int)*2);
 				matrix3[c3][0] = i;
 				matrix3[c3][1] = j;
 				valMatrix3[c3] = totVal;
 				c3++;
+				
 			}
 		}
 	}

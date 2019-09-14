@@ -63,6 +63,11 @@ void processCommands(int argc, char** argv, struct ReportData* r1){
 		filesReq = 2;
 		r1->cmd = "mm";
 	}
+	else if((cell = arraySearch("--trcsr",argv,argc))>-1){
+		command = 6;
+		filesReq = 1;
+		r1->cmd = "tr csr";
+	}
 	else{
 		printf("No command paramater found\n");
 		exit(0);
@@ -137,7 +142,16 @@ void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* 
 	if(r1->fileName2 != NULL){
 		fprintf(outFile,"%s\n",r1->fileName2);
 	}
-	fprintf(outFile,"%d\n%s\n%d\n%d\n\n", r1->threads,f1->dataType,f1->rows,f1->cols);
+	//fprintf(outFile,"%d\n%s\n%d\n%d\n\n", r1->threads,f1->dataType,f1->rows,f1->cols);
+	fprintf(outFile,"%d\n%s\n",r1->threads,f1->dataType);
+	if(f3->matrix == NULL){
+		fprintf(outFile,"%d\n%d\n",f1->rows,f1->cols);
+	}
+	else{
+		fprintf(outFile,"%d\n%d\n",f3->rows,f3->cols);
+	}
+			
+	
 	fprintf(outFile,"File processing time: %f\n",r1->fileProcTimeTaken);
 	fprintf(outFile,"Calculation processing time: %f\n",r1->calcProcTimeTaken);
 	

@@ -66,12 +66,13 @@ float traceCSRCalc(struct FileInfo* fInfo){
 		exit(0);
 	}
 	else{
+		
 		for(int i=0;i<rows;i++){
 			val = matrix[1][i+1] - matrix[1][i];
 			if(val > 0){
 				count = 0;
-				while(count < val && matrix[2][j + count] <= i ){
-					if(matrix[2][j + count] == i){
+				while(count < val && matrix[0][j + count] <= i ){
+					if(matrix[0][j + count] == i){
 						tot += fInfo->valMatrix[j+count];
 						count = val; 
 					}
@@ -81,6 +82,7 @@ float traceCSRCalc(struct FileInfo* fInfo){
 			j+=val;
 		}
 	}
+	
 	return tot;
 }
 
