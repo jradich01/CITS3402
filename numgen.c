@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv){
 	
-	const int NUMS = 2500;
+	const int NUMS = 4000000;
 	//float num = 0, a = 5.0;
 	int num=0;
 	FILE* file;
