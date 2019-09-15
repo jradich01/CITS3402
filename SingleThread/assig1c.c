@@ -26,30 +26,17 @@ int main(int argc, char** argv){
 	processCommands(argc,argv,&r1);
 	fileProcBegin = clock();
 	
-	//#pragma omp single
-	//{
-		#pragma omp task shared(f1)
-		{
-			initialiseFileInfo(&f1,r1.fileName1);
-			makeCoordMatrix(&f1);
-			//printf("r1 %d c1 %d r2 %d  c2 %d",f1.rows,f1.cols,f2.rows,f2.cols);
-		}
-		
-		#pragma omp task shared(f2,f3)
-		{
-			if(r1.fileName2 != NULL){
-				initialiseFileInfo(&f2,r1.fileName2);
-				makeCoordMatrix(&f2);
-			}
-			else{
-				f2.matrix = NULL;
-				f3.matrix = NULL;
-			}
-		//	printf("r1 %d c1 %d r2 %d  c2 %d",f1.rows,f1.cols,f2.rows,f2.cols);
-		}
-	//	#pragma omp taskwait
-	//}
-	printf("r1 %d c1 %d r2 %d  c2 %d",f1.rows,f1.cols,f2.rows,f2.cols);
+	initialiseFileInfo(&f1,r1.fileName1);
+	makeCoordMatrix(&f1);
+	
+	if(r1.fileName2 != NULL){
+		initialiseFileInfo(&f2,r1.fileName2);
+		makeCoordMatrix(&f2);
+	}
+	else{
+		f2.matrix = NULL;
+		f3.matrix = NULL;
+	}
 	fileProcEnd = clock();
 	calcProcBegin = clock();
 	
