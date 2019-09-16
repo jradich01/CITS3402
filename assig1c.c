@@ -17,14 +17,11 @@ int main(int argc, char** argv){
 	struct FileInfo f2;
 	struct FileInfo f3;
 	struct ReportData r1;
-	clock_t fileProcBegin;
-	clock_t fileProcEnd;
-	clock_t calcProcBegin;
-	clock_t calcProcEnd;
+	double fileProcBegin ,fileProcEnd, calcProcBegin, calcProcEnd;
 	
 	printf("v2.001\n");
 	processCommands(argc,argv,&r1);
-	fileProcBegin = clock();
+	fileProcBegin = omp_get_wtime();//clock();
 	
 	#pragma omp parallel
 	{
@@ -49,12 +46,11 @@ int main(int argc, char** argv){
 			}
 			
 		}
-		
 	}
 	#pragma omp taskwait
-	printf("r1 %d c1 %d r2 %d  c2 %d",f1.rows,f1.cols,f2.rows,f2.cols);
-	fileProcEnd = clock();
-	calcProcBegin = clock();
+
+	fileProcEnd = omp_get_wtime();//clock();
+	calcProcBegin = omp_get_wtime();//clock();
 	
 	switch(r1.command){
 		case 1: //scalar
@@ -64,7 +60,8 @@ int main(int argc, char** argv){
 			r1.trace = traceCoordCalc(&f1);
 			break;
 		case 3: //transpose
-			transposeMatrix(&f1);
+			//transposeMatrix(&f1);
+			transposeMatrixMP(&f1);
 			break;
 		case 4: // addition
 			coordMatrixAddition(&f1,&f2,&f3);
@@ -77,10 +74,10 @@ int main(int argc, char** argv){
 			exit(0);
 	}
 	
-	calcProcEnd = clock();
+	calcProcEnd = omp_get_wtime();//clock();
 	
-	r1.fileProcTimeTaken = (double)(fileProcEnd-fileProcBegin)/CLOCKS_PER_SEC;
-	r1.calcProcTimeTaken = (double)(calcProcEnd-calcProcBegin)/CLOCKS_PER_SEC;
+	r1.fileProcTimeTaken = (fileProcEnd-fileProcBegin);///CLOCKS_PER_SEC;
+	r1.calcProcTimeTaken = (calcProcEnd-calcProcBegin);///CLOCKS_PER_SEC;
 	printOutputFile(&f1,&f2, &f3,&r1);
 	memoryCleanup(&f1,&f2,&f3);
 

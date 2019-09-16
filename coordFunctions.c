@@ -1,3 +1,4 @@
+#include<omp.h>
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -45,6 +46,8 @@ void makeCoordMatrix(struct FileInfo* fInfo){
 }
 
 void scalarMultiply(struct FileInfo* f1, float scalar){
+	
+	#pragma omp parallel for
 	for(int i=0; i<f1->size; i++){
 		f1->valMatrix[i] *= scalar;
 	}
@@ -204,6 +207,42 @@ void transposeMatrix(struct FileInfo* f1){
 	f1->cols = temp;
 }
 
+
+
+void transposeMatrixMP(struct FileInfo* f1){
+	
+	int** reg = malloc(sizeof(int*)*f1->rows);
+	
+	for(int i=0;i<f1->rows;i++){
+		reg[0] = (int*)malloc(sizeof(int)*f1->cols);
+		for(int j = 0; j< f1->cols;j++){
+			reg[i][j]=0;
+		}
+	}
+	
+	for(int i=0; i<f1->size;i++){
+		reg[f1->matrix[i][0]][f1->matrix[i][1]] = f1->valMatrix[i];
+	}
+	
+	int c =0;
+	for(int i=0;i<f1->rows;i++){
+		for(int j =0;j<f1->cols;j++){
+			if(reg[i][j] != 0){
+				f1->matrix[c][0] = i;
+				f1->matrix[c][1] = j;
+				f1->valMatrix[c] = reg[i][j];
+				c++;
+			}
+		}
+	}
+	
+	for(int i=0;i<f1->rows;i++){
+		free(reg[i]);
+	}
+	free(reg);
+	
+}
+
 //searching for values and multipling can be threaded, but ordered stuff cant reall.y 
 void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
 	if(f1->cols != f2->rows){
@@ -228,8 +267,10 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 	f3->valMatrix = valMatrix3;
 	strcpy(f3->printToken,f1->printToken);
 
+	#pragma omp parallel for firstprivate(c1,val,startPoint,c3,totVal,reg)
 	for(int i=0; i<f1->rows; i++){
 		startPoint = c1;
+		//#pragma omp parallel for firstprivate(c1,val,startPoint,c3,totVal,reg)
 		for(int j=0; j<f2->cols; j++){
 			
 			c1=startPoint;
@@ -244,29 +285,32 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 					reg[matrix2[k][0]] = f2->valMatrix[k];
 				}
 			}
+
 			
 			while(c1 < f1->size && matrix1[c1][0] <= i){
 				if(matrix1[c1][0] == i){
 					val = f1->valMatrix[c1] * reg[matrix1[c1][1]];
 					totVal += val;
+					
 				}								
 				c1++;
 			}
 			
 			
-			if(totVal > 0){		
-				
+		//	if(totVal > 0){		
+				c3 = (i *f3->cols) + j;
 				matrix3[c3] = (int*)malloc(sizeof(int)*2);
 				matrix3[c3][0] = i;
 				matrix3[c3][1] = j;
 				valMatrix3[c3] = totVal;
-				c3++;
+			//	printf("Cell: %d Val: %f\n",c3,totVal);
+		//		c3++;
 				
-			}
+		//	}
 		}
 	}
 	
-	f3->size = c3;
+	f3->size = size3;
 }
 
 
