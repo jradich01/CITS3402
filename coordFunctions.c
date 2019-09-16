@@ -204,6 +204,7 @@ void transposeMatrix(struct FileInfo* f1){
 	f1->cols = temp;
 }
 
+//searching for values and multipling can be threaded, but ordered stuff cant reall.y 
 void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
 	if(f1->cols != f2->rows){
 		printf("Columns of Matrix 1 and rows of Matrix 2 must be equal\n");
