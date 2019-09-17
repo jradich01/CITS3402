@@ -9,19 +9,17 @@
 
 int main(int argc, char** argv){
 	
-	//TODO some cleanup resturctuing
+	//TODO
+	//do additional thread tests
 	// write repoort
-	// multi thread
 	//comment code
-	struct FileInfo f1;
-	struct FileInfo f2;
-	struct FileInfo f3;
+	struct FileInfo f1,f2,f3;
 	struct ReportData r1;
 	double fileProcBegin ,fileProcEnd, calcProcBegin, calcProcEnd;
 	
-	printf("v2.001\n");
 	processCommands(argc,argv,&r1);
-	fileProcBegin = omp_get_wtime();//clock();
+	printf("Working..\n");
+	fileProcBegin = omp_get_wtime();
 	
 	#pragma omp parallel
 	{
@@ -49,25 +47,24 @@ int main(int argc, char** argv){
 	}
 	#pragma omp taskwait
 
-	fileProcEnd = omp_get_wtime();//clock();
-	calcProcBegin = omp_get_wtime();//clock();
+	fileProcEnd = omp_get_wtime();
+	calcProcBegin = omp_get_wtime();
 	
 	switch(r1.command){
 		case 1: //scalar
-			scalarMultiply(&f1,r1.scalarVal);
+			scalarMultiply(&f1,r1.scalarVal,r1.threads);
 			break;
-		case 2: //trace - csr also available
-			r1.trace = traceCoordCalc(&f1);
+		case 2: //trace
+			r1.trace = traceCoordCalc(&f1,r1.threads);
 			break;
 		case 3: //transpose
-			//transposeMatrix(&f1);
-			transposeMatrixMP(&f1);
+			transposeMatrixMP(&f1,r1.threads);
 			break;
 		case 4: // addition
 			coordMatrixAddition(&f1,&f2,&f3);
 			break;
 		case 5: // multiply //r1xc1 r2xc2  c1 == r2.  creates a r1xc2 matrix
-			coordMatrixMultiply(&f1,&f2,&f3);
+			coordMatrixMultiply(&f1,&f2,&f3, r1.threads);
 			break;
 		default:
 			printf("Unknown error\n");
@@ -76,10 +73,11 @@ int main(int argc, char** argv){
 	
 	calcProcEnd = omp_get_wtime();//clock();
 	
-	r1.fileProcTimeTaken = (fileProcEnd-fileProcBegin);///CLOCKS_PER_SEC;
-	r1.calcProcTimeTaken = (calcProcEnd-calcProcBegin);///CLOCKS_PER_SEC;
+	r1.fileProcTimeTaken = (fileProcEnd-fileProcBegin);
+	r1.calcProcTimeTaken = (calcProcEnd-calcProcBegin);
 	printOutputFile(&f1,&f2, &f3,&r1);
 	memoryCleanup(&f1,&f2,&f3);
+	printf("Complete.\n");
 
 	return 0;
 }

@@ -90,6 +90,19 @@ void processCommands(int argc, char** argv, struct ReportData* r1){
 	if((cell = arraySearch("-l",argv,argc))>-1){
 		r1->log = 1;
 	}
+	
+	r1->threads =1;
+	if((cell=arraySearch("-t",argv,argc))>-1){
+		if(argc < cell + 2){
+			printf("Number of threads required\n");
+			exit(0);
+		}
+		r1->threads = atoi(argv[cell+1]);
+		if(r1->threads == 0){
+			printf("Invalid thread value\n");
+			exit(0);
+		}
+	}
 
 	r1->command = command;
 }
@@ -126,8 +139,6 @@ void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* 
 	strcat(fileName,r1->cmd);
 	strcat(fileName,".out");
 	
-	r1->threads = 1;  //update when multi threading
-	
 	FILE* outFile = fopen(fileName,"w");
 	if(outFile == NULL){
 		printf("Could not create output file");
@@ -137,7 +148,11 @@ void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* 
 	if(r1->fileName2 != NULL){
 		fprintf(outFile,"%s\n",r1->fileName2);
 	}
-	fprintf(outFile,"%d\n%s\n",r1->threads,f1->dataType);
+	if(r1->threads != 0){
+		fprintf(outFile,"%d\n",r1->threads);
+	}
+	fprintf(outFile,"%s\n",f1->dataType);
+	
 	if(f3->matrix == NULL){
 		fprintf(outFile,"%d\n%d\n",f1->rows,f1->cols);
 	}

@@ -45,9 +45,9 @@ void makeCoordMatrix(struct FileInfo* fInfo){
 	
 }
 
-void scalarMultiply(struct FileInfo* f1, float scalar){
+void scalarMultiply(struct FileInfo* f1, float scalar,int threads){
 	
-	#pragma omp parallel for
+	#pragma omp parallel for num_threads(threads)
 	for(int i=0; i<f1->size; i++){
 		f1->valMatrix[i] *= scalar;
 	}
@@ -74,7 +74,7 @@ void printDenseCoordMatrix(struct FileInfo* f1, FILE* file){
 	}
 }
 
-float traceCoordCalc(struct FileInfo* fInfo){
+float traceCoordCalc(struct FileInfo* fInfo,int threads){
 	int size = fInfo->size;
 	int rows = fInfo->rows;
 	int cols = fInfo->cols;
@@ -86,7 +86,7 @@ float traceCoordCalc(struct FileInfo* fInfo){
 		exit(0);
 	}
 	else{
-		#pragma omp parallel for reduction(+:tot) 
+		#pragma omp parallel for reduction(+:tot) num_threads(threads)
 		for(int i=0;i<size;i++){
 			if(matrix[i][0] ==  matrix[i][1]){
 				tot+= fInfo->valMatrix[i];
@@ -117,35 +117,51 @@ void coordMatrixAddition(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 	int** matrix2 = f2->matrix;
 	
 	while(s1Count < size1 || s2Count < size2){
-		if(matrix1[s1Count][0] < matrix2[s2Count][0]){
+		
+		if(s2Count>=size2){
 			nextRow = matrix1[s1Count][0];
 			nextCol = matrix1[s1Count][1];
 			val = f1->valMatrix[s1Count];
 			s1Count++;
-		}		
-		else if(matrix1[s1Count][0] > matrix2[s2Count][0]){
+		}
+		else if(s1Count>= size1){
 			nextRow = matrix2[s2Count][0];
 			nextCol = matrix2[s2Count][1];
 			val = f2->valMatrix[s2Count];
 			s2Count++;
-		}	
+		}
 		else{
-			nextRow = matrix1[s1Count][0];
-			if(matrix1[s1Count][1] < matrix2[s2Count][1]){
+		
+			if(matrix1[s1Count][0] < matrix2[s2Count][0]){
+				nextRow = matrix1[s1Count][0];
 				nextCol = matrix1[s1Count][1];
 				val = f1->valMatrix[s1Count];
 				s1Count++;
-			}
-			else if(matrix1[s1Count][1] > matrix2[s2Count][1]){
+			}		
+			else if(matrix1[s1Count][0] > matrix2[s2Count][0]){
+				nextRow = matrix2[s2Count][0];
 				nextCol = matrix2[s2Count][1];
 				val = f2->valMatrix[s2Count];
 				s2Count++;
-			}
+			}	
 			else{
-				nextCol = matrix1[s1Count][1];
-				val = f1->valMatrix[s1Count] + f2->valMatrix[s2Count];
-				s1Count++;
-				s2Count++;
+				nextRow = matrix1[s1Count][0];
+				if(matrix1[s1Count][1] < matrix2[s2Count][1]){
+					nextCol = matrix1[s1Count][1];
+					val = f1->valMatrix[s1Count];
+					s1Count++;
+				}
+				else if(matrix1[s1Count][1] > matrix2[s2Count][1]){
+					nextCol = matrix2[s2Count][1];
+					val = f2->valMatrix[s2Count];
+					s2Count++;
+				}
+				else{
+					nextCol = matrix1[s1Count][1];
+					val = f1->valMatrix[s1Count] + f2->valMatrix[s2Count];
+					s1Count++;
+					s2Count++;
+				}
 			}
 		}
 		matrix3[size3] = (int*)malloc(sizeof(int)*2);
@@ -165,6 +181,7 @@ void coordMatrixAddition(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 	
 }
 
+/*
 void transposeMatrix(struct FileInfo* f1){
 	int temp = 0;
 	int temp2 = 0;
@@ -203,15 +220,15 @@ void transposeMatrix(struct FileInfo* f1){
 	temp = f1->rows;
 	f1->rows = f1->cols;
 	f1->cols = temp;
-}
+}*/
 
 
 
-void transposeMatrixMP(struct FileInfo* f1){
+void transposeMatrixMP(struct FileInfo* f1,int threads){
 	
 	float** reg = malloc(sizeof(float*)*f1->rows);
 	
-	#pragma omp parallel for
+	#pragma omp parallel for num_threads(threads)
 	for(int i=0;i<f1->rows;i++){
 		reg[i] = (float*)malloc(sizeof(float)*f1->cols);
 		for(int j = 0; j< f1->cols;j++){
@@ -219,7 +236,6 @@ void transposeMatrixMP(struct FileInfo* f1){
 		}
 	}
 	
-	//#pragma omp parallel for
 	for(int i=0; i<f1->size;i++){
 		reg[f1->matrix[i][1]][f1->matrix[i][0]] = f1->valMatrix[i];
 	}
@@ -236,7 +252,6 @@ void transposeMatrixMP(struct FileInfo* f1){
 		}
 	}
 	
-	//#pragma omp parallel for
 	for(int i=0;i<f1->rows;i++){
 		free(reg[i]);
 	}
@@ -244,8 +259,7 @@ void transposeMatrixMP(struct FileInfo* f1){
 	
 }
 
-//searching for values and multipling can be threaded, but ordered stuff cant reall.y 
-void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
+void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3, int threads){
 	if(f1->cols != f2->rows){
 		printf("Columns of Matrix 1 and rows of Matrix 2 must be equal\n");
 		exit(0);
@@ -268,10 +282,9 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 	f3->valMatrix = valMatrix3;
 	strcpy(f3->printToken,f1->printToken);
 
-	#pragma omp parallel for firstprivate(c1,val,startPoint,c3,totVal,reg)
+	#pragma omp parallel for firstprivate(c1,val,startPoint,c3,totVal,reg) num_threads(threads)
 	for(int i=0; i<f1->rows; i++){
 		startPoint = c1;
-		//#pragma omp parallel for firstprivate(c1,val,startPoint,c3,totVal,reg)
 		for(int j=0; j<f2->cols; j++){
 			
 			c1=startPoint;
@@ -286,8 +299,7 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 					reg[matrix2[k][0]] = f2->valMatrix[k];
 				}
 			}
-
-			
+		
 			while(c1 < f1->size && matrix1[c1][0] <= i){
 				if(matrix1[c1][0] == i){
 					val = f1->valMatrix[c1] * reg[matrix1[c1][1]];
@@ -296,18 +308,12 @@ void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileIn
 				}								
 				c1++;
 			}
-			
-			
-		//	if(totVal > 0){		
-				c3 = (i *f3->cols) + j;
-				matrix3[c3] = (int*)malloc(sizeof(int)*2);
-				matrix3[c3][0] = i;
-				matrix3[c3][1] = j;
-				valMatrix3[c3] = totVal;
-			//	printf("Cell: %d Val: %f\n",c3,totVal);
-		//		c3++;
 				
-		//	}
+			c3 = (i *f3->cols) + j;
+			matrix3[c3] = (int*)malloc(sizeof(int)*2);
+			matrix3[c3][0] = i;
+			matrix3[c3][1] = j;
+			valMatrix3[c3] = totVal;
 		}
 	}
 	

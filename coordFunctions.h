@@ -1,9 +1,9 @@
 
 void makeCoordMatrix(struct FileInfo* fInfo);
-void scalarMultiply(struct FileInfo* f1, float scalar);
+void scalarMultiply(struct FileInfo* f1, float scalar,int threads);
 void printDenseCoordMatrix(struct FileInfo* f1, FILE* file);
-float traceCoordCalc(struct FileInfo* fInfo);
+float traceCoordCalc(struct FileInfo* fInfo,int threads);
 void coordMatrixAddition(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3);
-void transposeMatrix(struct FileInfo* fInfo);
-void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3);
-void transposeMatrixMP(struct FileInfo* f1);
+//void transposeMatrix(struct FileInfo* fInfo);
+void coordMatrixMultiply(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3, int threads);
+void transposeMatrixMP(struct FileInfo* f1,int threads);
