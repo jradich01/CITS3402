@@ -86,12 +86,10 @@ float traceCoordCalc(struct FileInfo* fInfo){
 		exit(0);
 	}
 	else{
-		for(int i=0;i<rows;i++){
-			while(m < size && (matrix[m][0] <= i || matrix[m][1] <= i) ){
-				if(matrix[m][0] == i && matrix[m][1] == i){
-					tot+= fInfo->valMatrix[m];
-				}
-				m++;
+		#pragma omp parallel for reduction(+:tot) 
+		for(int i=0;i<size;i++){
+			if(matrix[i][0] ==  matrix[i][1]){
+				tot+= fInfo->valMatrix[i];
 			}
 		}
 	}
