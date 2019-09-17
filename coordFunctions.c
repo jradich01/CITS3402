@@ -211,21 +211,23 @@ void transposeMatrix(struct FileInfo* f1){
 
 void transposeMatrixMP(struct FileInfo* f1){
 	
-	int** reg = malloc(sizeof(int*)*f1->rows);
+	float** reg = malloc(sizeof(float*)*f1->rows);
 	
+	#pragma omp parallel for
 	for(int i=0;i<f1->rows;i++){
-		reg[0] = (int*)malloc(sizeof(int)*f1->cols);
+		reg[i] = (float*)malloc(sizeof(float)*f1->cols);
 		for(int j = 0; j< f1->cols;j++){
 			reg[i][j]=0;
 		}
 	}
 	
+	//#pragma omp parallel for
 	for(int i=0; i<f1->size;i++){
-		reg[f1->matrix[i][0]][f1->matrix[i][1]] = f1->valMatrix[i];
+		reg[f1->matrix[i][1]][f1->matrix[i][0]] = f1->valMatrix[i];
 	}
 	
 	int c =0;
-	for(int i=0;i<f1->rows;i++){
+	for(int i=0;i<f1->rows;i++){  //cant be threaded as has to go in order. 
 		for(int j =0;j<f1->cols;j++){
 			if(reg[i][j] != 0){
 				f1->matrix[c][0] = i;
@@ -236,6 +238,7 @@ void transposeMatrixMP(struct FileInfo* f1){
 		}
 	}
 	
+	//#pragma omp parallel for
 	for(int i=0;i<f1->rows;i++){
 		free(reg[i]);
 	}
