@@ -1,3 +1,9 @@
+//assig1c.c
+//cits3402  
+//assignment1
+//author: jradich
+
+
 #include<omp.h>
 #include<stdio.h>
 #include<stdlib.h>

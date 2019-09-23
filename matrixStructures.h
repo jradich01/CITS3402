@@ -1,4 +1,10 @@
+//matrixStructures.h
+//cits3402  
+//assignment1
+//author: jradich
 
+
+//structure to store fileInfo and actual matrix
 struct FileInfo{
 	FILE* file;
 	int rows,cols,size;
@@ -8,6 +14,7 @@ struct FileInfo{
 	char printToken[3];
 };
 
+//structure to store reporting data. 
 struct ReportData{
 	char* fileName1;
 	char* fileName2;

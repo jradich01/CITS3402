@@ -1,3 +1,7 @@
+//helperFunctions.h
+//cits3402  
+//assignment1
+//author: jradich
 
 void processCommands(int argc, char** argv, struct ReportData* r1);
 int arraySearch(char* cmd, char** arr, int size);

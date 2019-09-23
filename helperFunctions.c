@@ -1,3 +1,9 @@
+//helperFunctions.c
+//cits3402  
+//assignment1
+//author: jradich
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -144,6 +150,7 @@ void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* 
 	strcat(fileName,r1->cmd);
 	strcat(fileName,".out");
 	
+	//output details to file
 	FILE* outFile = fopen(fileName,"w");
 	if(outFile == NULL){
 		printf("Could not create output file");
@@ -168,6 +175,7 @@ void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* 
 	fprintf(outFile,"File processing time: %f\n",r1->fileProcTimeTaken);
 	fprintf(outFile,"Calculation processing time: %f\n",r1->calcProcTimeTaken);
 	
+	//if user has entered log command, also print the matrix. 
 	if(r1->log ==1){
 		if(r1->command == 1 || r1->command == 3){
 			printDenseCoordMatrix(f1,outFile);
@@ -183,6 +191,7 @@ void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* 
 	fclose(outFile);
 }	
 
+//scan file for non zero numbers to see how large matrix needs to be. 
 int getArraySize(FILE* file){
 	int count =0;
 	float val =0;
@@ -195,6 +204,7 @@ int getArraySize(FILE* file){
 	return count;	
 }
 
+//get meta data from file such as data types, matrix dimensions and matrix size 
 void initialiseFileInfo(struct FileInfo* fInfo, char* fileName){
 	int loc = 0;
 	
@@ -211,13 +221,14 @@ void initialiseFileInfo(struct FileInfo* fInfo, char* fileName){
 	else{
 		strcpy(fInfo->printToken,"%f");
 	}
-	
+	//set file pointer at top of matrix so its ready to be input
 	loc = ftell(fInfo->file);
 	fInfo->size = getArraySize(fInfo->file);
 	fseek(fInfo->file,loc,SEEK_SET);
 	
 }
 
+//deallocate the matrix memory and close files. 
 void memoryCleanup(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3){
 	fclose(f1->file);
 	closeMatrix((void*)f1->matrix,f1->size);

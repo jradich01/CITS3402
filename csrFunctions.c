@@ -1,3 +1,8 @@
+//csrFunctions.c
+//cits3402  
+//assignment1
+//author: jradich
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -5,6 +10,7 @@
 #include "csrFunctions.h"
 
 
+//store matrix in csr format 
 void makeCSRMatrix(struct FileInfo* fInfo){
 	int size = fInfo->size;
 	int rows = fInfo->rows;
@@ -16,8 +22,8 @@ void makeCSRMatrix(struct FileInfo* fInfo){
 	int totCount = 1;
 	float* valMatrix = malloc(sizeof(float)*size);
 	int** CSRMatrix = malloc(sizeof(int*)*2);
-	CSRMatrix[0] = (int*)malloc(sizeof(int)*size);
-	CSRMatrix[1] = (int*)malloc(sizeof(int)*(rows+1));
+	CSRMatrix[0] = (int*)malloc(sizeof(int)*size);  // column location 
+	CSRMatrix[1] = (int*)malloc(sizeof(int)*(rows+1));  //row total 
 	
 	CSRMatrix[1][0] = 0; j++;
 	for(int i=0;i<size;i++){
@@ -27,18 +33,18 @@ void makeCSRMatrix(struct FileInfo* fInfo){
 		}
 		fscanf(fInfo->file,"%f\n",&val);
 		col = totCount % cols;
-		if(col ==0){
+		if(col ==0){  //if value is in last column 
 			col = cols;
 		}
 		if(val == 0){
 			i--;
 		}
 		else{
-			valMatrix[i] = val;
+			valMatrix[i] = val;  //store values 
 			CSRMatrix[0][i] = col - 1;
 			rowCount++;
 		}
-		if(col == cols){
+		if(col == cols){  //if an entire row has been done, store row total 
 			CSRMatrix[1][j] = rowCount;
 			j++;
 		}
@@ -52,6 +58,7 @@ void makeCSRMatrix(struct FileInfo* fInfo){
 	fInfo->matrix= CSRMatrix;
 } 
 
+//trace calc for csr format 
 float traceCSRCalc(struct FileInfo* fInfo){
 	int size = fInfo->size;
 	int rows = fInfo->rows;
@@ -68,11 +75,11 @@ float traceCSRCalc(struct FileInfo* fInfo){
 	else{
 		
 		for(int i=0;i<rows;i++){
-			val = matrix[1][i+1] - matrix[1][i];
+			val = matrix[1][i+1] - matrix[1][i];  //how many values are in row 
 			if(val > 0){
 				count = 0;
 				while(count < val && matrix[0][j + count] <= i ){
-					if(matrix[0][j + count] == i){
+					if(matrix[0][j + count] == i){ //look at values and see if theres one in the corresponding column 
 						tot += fInfo->valMatrix[j+count];
 						count = val; 
 					}
@@ -86,6 +93,7 @@ float traceCSRCalc(struct FileInfo* fInfo){
 	return tot;
 }
 
+//prints out matrix from csr array 
 void printDenseCSRMatrix(struct FileInfo* fInfo, FILE* f){
 	int size = fInfo->size;
 	int rows = fInfo->rows;
@@ -100,12 +108,12 @@ void printDenseCSRMatrix(struct FileInfo* fInfo, FILE* f){
 	strcat(printFormat," ");
 	
 	for(int j=0;j<rows;j++){
-		numInRow = matrix[1][j+1] - matrix[1][j];
+		numInRow = matrix[1][j+1] - matrix[1][j]; //number of elements in the row 
 		count = 0;
 		for(int i=0;i<cols;i++){
 			val = 0;
 			if(count < numInRow && matrix[2][totCount + count] == i){
-				fInfo->valMatrix[totCount+count];
+				fInfo->valMatrix[totCount+count];  //if value is in column, print it 
 				count++;
 			}
 			fprintf(f,printFormat,val);
