@@ -6,6 +6,8 @@
 #include "helperFunctions.h"
 #include "coordFunctions.h"
 
+//function to search an array of strings for a certain value and 
+//return its location in the array.  If not found -1 is returned. 
 int arraySearch(char* cmd, char** arr, int size){
 	int cell = -1;
 	for(int i=0;i<size;i++){
@@ -17,22 +19,23 @@ int arraySearch(char* cmd, char** arr, int size){
 	return cell;
 }
 
+//functions to process the console commands input by the user.
 void processCommands(int argc, char** argv, struct ReportData* r1){
 	
 	int cell = -1;
 	int command = 0;
 	int filesReq = 0;
-	if(argc<4){
+	if(argc<4){ //minimum parameters required is 4 
 		printf("Not enough parameters 1\n");
 		exit(0);
 	}
-	if((cell = arraySearch("--sc",argv,argc)) >-1){
+	if((cell = arraySearch("--sc",argv,argc)) >-1){ //scalar command 
 		float scalarVal = 0;
-		if(argc < (cell + 2)){
+		if(argc < (cell + 2)){ // check for scalar value 
 			printf("Missing scalar multiplier\n");
 			exit(0);
 		}
-		scalarVal = atof(argv[cell+1]);
+		scalarVal = atof(argv[cell+1]);  //check if entered scalar value is valid 
 		if(scalarVal == 0){
 			if(strcmp("0",argv[cell+1])!=0){
 				printf("Could not convert scalar param to integer \n");
@@ -43,24 +46,24 @@ void processCommands(int argc, char** argv, struct ReportData* r1){
 		r1->scalarVal = scalarVal;
 		r1->cmd = "sc";
 	}
-	else if((cell = arraySearch("--tr",argv,argc)) >-1){
+	else if((cell = arraySearch("--tr",argv,argc)) >-1){  //trace command
 		command = 2;
 		filesReq = 1;
 		r1->cmd = "tr";
 	}
-	else if((cell = arraySearch("--ts",argv,argc))>-1){
+	else if((cell = arraySearch("--ts",argv,argc))>-1){ //transpose command
 		command = 3;
 		filesReq = 1;
 		r1->cmd = "ts";
 	}
-	else if((cell = arraySearch("--ad",argv,argc))>-1){
+	else if((cell = arraySearch("--ad",argv,argc))>-1){ //addition command 
 		command = 4;
-		filesReq = 2;
+		filesReq = 2;  // set that 2 files are needed 
 		r1->cmd = "ad";
 	}
-	else if((cell = arraySearch("--mm",argv,argc))>-1){
+	else if((cell = arraySearch("--mm",argv,argc))>-1){  //multiplication command
 		command = 5;
-		filesReq = 2;
+		filesReq = 2;  //set that 2 files are needed 
 		r1->cmd = "mm";
 	}
 	else{
@@ -68,12 +71,12 @@ void processCommands(int argc, char** argv, struct ReportData* r1){
 		exit(0);
 	}
 	
-	if((cell = arraySearch("-f",argv,argc))<0){
+	if((cell = arraySearch("-f",argv,argc))<0){  //look for file command 
 		printf("File command required\n");
 		exit(0);
 	}
 	
-	if(argc < (cell + filesReq + 1)){
+	if(argc < (cell + filesReq + 1)){  //make sure required amount of files has been input 
 		printf("Not enough parameters 2\n");
 		exit(0);
 	}
@@ -87,12 +90,12 @@ void processCommands(int argc, char** argv, struct ReportData* r1){
 	}
 	
 	r1->log = 0;
-	if((cell = arraySearch("-l",argv,argc))>-1){
+	if((cell = arraySearch("-l",argv,argc))>-1){  //check if user wants array logged 
 		r1->log = 1;
 	}
 	
 	r1->threads =1;
-	if((cell=arraySearch("-t",argv,argc))>-1){
+	if((cell=arraySearch("-t",argv,argc))>-1){  //check if user has specified threads 
 		if(argc < cell + 2){
 			printf("Number of threads required\n");
 			exit(0);
@@ -108,6 +111,7 @@ void processCommands(int argc, char** argv, struct ReportData* r1){
 }
 
 
+//function to create output file.  
 void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* f3, struct ReportData* r1){
 	
 	time_t t = time(NULL);
@@ -120,7 +124,7 @@ void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* 
 	char* delim3="0";
 	char* delim4="0";
 	
-	if(tm.tm_mday >= 10){
+	if(tm.tm_mday >= 10){  //create 0 prefix if values are less than 10 
 		delim1="";
 	}
 	if(tm.tm_mon >= 10){
@@ -133,6 +137,7 @@ void printOutputFile(struct FileInfo* f1, struct FileInfo* f2, struct FileInfo* 
 		delim4="";
 	}
 
+	//first create filename which is date, time, student number and command  
 	snprintf(dateTime,sizeof(dateTime),"_%s%d%s%d%d_%s%d%s%d_",delim1,tm.tm_mday,delim2,tm.tm_mon+1,tm.tm_year + 1900,delim3, tm.tm_hour,delim4, tm.tm_min);	
 	strcpy(fileName,studentID);
 	strcat(fileName,dateTime);

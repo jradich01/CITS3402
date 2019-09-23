@@ -9,30 +9,26 @@
 
 int main(int argc, char** argv){
 	
-	//TODO
-	//do additional thread tests
-	// write repoort
-	//comment code
 	struct FileInfo f1,f2,f3;
 	struct ReportData r1;
 	double fileProcBegin ,fileProcEnd, calcProcBegin, calcProcEnd;
 	
-	processCommands(argc,argv,&r1);
+	processCommands(argc,argv,&r1);  //process commands entered by user
 	printf("Working..\n");
-	fileProcBegin = omp_get_wtime();
+	fileProcBegin = omp_get_wtime();  //begin recording file processing time 
 	
 	#pragma omp parallel
 	{
-		#pragma omp single nowait
+		#pragma omp single nowait //use parellel block but only spawn tasks from a single thread
 		{
-			#pragma omp task 
+			#pragma omp task    //task 1 manages the first file initialisation
 			{
-				initialiseFileInfo(&f1,r1.fileName1);
+				initialiseFileInfo(&f1,r1.fileName1);  //first initialise the file and then create the matrix
 				makeCoordMatrix(&f1);
 			}
 			
-			#pragma omp task 
-			{
+			#pragma omp task   //if a second file is required this is handled by a second thread so 
+			{					//both files can be loaded in parallel. 
 				if(r1.fileName2 != NULL){
 					initialiseFileInfo(&f2,r1.fileName2);
 					makeCoordMatrix(&f2);
@@ -45,10 +41,10 @@ int main(int argc, char** argv){
 			
 		}
 	}
-	#pragma omp taskwait
+	#pragma omp taskwait  //wait for both files to finish loading before continuing
 
-	fileProcEnd = omp_get_wtime();
-	calcProcBegin = omp_get_wtime();
+	fileProcEnd = omp_get_wtime();  //stop recording file processing time and start recording 
+	calcProcBegin = omp_get_wtime();// specified calculation time. 
 	
 	switch(r1.command){
 		case 1: //scalar
@@ -71,12 +67,12 @@ int main(int argc, char** argv){
 			exit(0);
 	}
 	
-	calcProcEnd = omp_get_wtime();//clock();
+	calcProcEnd = omp_get_wtime();//stop recording calculation time 
 	
-	r1.fileProcTimeTaken = (fileProcEnd-fileProcBegin);
+	r1.fileProcTimeTaken = (fileProcEnd-fileProcBegin);  //calculate times 
 	r1.calcProcTimeTaken = (calcProcEnd-calcProcBegin);
-	printOutputFile(&f1,&f2, &f3,&r1);
-	memoryCleanup(&f1,&f2,&f3);
+	printOutputFile(&f1,&f2, &f3,&r1);  //print output to file 
+	memoryCleanup(&f1,&f2,&f3);  // clean up allocated memory 
 	printf("Complete.\n");
 
 	return 0;
